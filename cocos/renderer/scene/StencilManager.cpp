@@ -53,7 +53,7 @@ Effect* StencilManager::handleEffect (Effect* effect)
     {
         for (const auto& pass : passes)
         {
-            if (pass->getStencilTest()) {
+            if (pass->isStencilTest()) {
                 pass->disableStencilTest();
             }
         }

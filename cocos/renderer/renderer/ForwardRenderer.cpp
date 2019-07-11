@@ -344,9 +344,9 @@ void ForwardRenderer::drawItems(const std::vector<StageItem>& items)
     size_t count = _shadowLights.size();
     if (count == 0 && _numLights == 0)
     {
-        for (const auto& item : items)
+        for (int i = 0; i < items.size(); i++)
         {
-            draw(item);
+            draw(items[i]);
         }
     }
     else

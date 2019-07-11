@@ -26,8 +26,10 @@
 
 RENDERER_BEGIN
 
-Pass::Pass(const std::string& programName)
+Pass::Pass(const std::string& programName, uint32_t* data, uint32_t byteOffset)
 : _programName(programName)
+, __data(data)
+, __byteOffset(byteOffset)
 {
 //    RENDERER_LOGD("Pass constructor: %p", this);
 }
@@ -39,7 +41,8 @@ Pass::~Pass()
 
 void Pass::setCullMode(CullMode cullMode)
 {
-    _cullMode = cullMode;
+    if (!__data) return;
+    __data[0] = (uint32_t)cullMode;
 }
 
 void Pass::setBlend(BlendOp blendEq,
@@ -50,21 +53,25 @@ void Pass::setBlend(BlendOp blendEq,
                     BlendFactor blendDstAlpha,
                     uint32_t blendColor)
 {
-    _blend = true;
-    _blendEq = blendEq;
-    _blendSrc = blendSrc;
-    _blendDst = blendDst;
-    _blendAlphaEq = blendAlphaEq;
-    _blendSrcAlpha = blendSrcAlpha;
-    _blendDstAlpha = blendDstAlpha;
-    _blendColor = blendColor;
+    if (!__data) return;
+    
+    __data[1] = (uint32_t)true;
+    __data[2] = (uint32_t)blendEq;
+    __data[3] = (uint32_t)blendSrc;
+    __data[4] = (uint32_t)blendDst;
+    __data[5] = (uint32_t)blendAlphaEq;
+    __data[6] = (uint32_t)blendSrcAlpha;
+    __data[7] = (uint32_t)blendDstAlpha;
+    __data[8] = (uint32_t)blendColor;
 }
 
 void Pass::setDepth(bool depthTest, bool depthWrite, DepthFunc depthFunc)
 {
-    _depthTest = depthTest;
-    _depthWrite = depthWrite;
-    _depthFunc = depthFunc;
+    if (!__data) return;
+    
+    __data[9] = (uint32_t)depthTest;
+    __data[10] = (uint32_t)depthWrite;
+    __data[11] = (uint32_t)depthFunc;
 }
 
 void Pass::setStencilFront(StencilFunc stencilFunc,
@@ -75,14 +82,16 @@ void Pass::setStencilFront(StencilFunc stencilFunc,
                            StencilOp stencilZPassOp,
                            uint8_t stencilWriteMask)
 {
-    _stencilTest = true;
-    _stencilFuncFront = stencilFunc;
-    _stencilRefFront = stencilRef;
-    _stencilMaskFront = stencilMask;
-    _stencilFailOpFront = stencilFailOp;
-    _stencilZFailOpFront = stencilZFailOp;
-    _stencilZPassOpFront = stencilZPassOp;
-    _stencilWriteMaskFront = stencilWriteMask;
+    if (!__data) return;
+    
+    __data[12] = true;
+    __data[13] = (uint32_t)stencilFunc;
+    __data[14] = (uint32_t)stencilRef;
+    __data[15] = (uint32_t)stencilMask;
+    __data[16] = (uint32_t)stencilFailOp;
+    __data[17] = (uint32_t)stencilZFailOp;
+    __data[18] = (uint32_t)stencilZPassOp;
+    __data[19] = (uint32_t)stencilWriteMask;
 }
 
 void Pass::setStencilBack(StencilFunc stencilFunc,
@@ -93,55 +102,26 @@ void Pass::setStencilBack(StencilFunc stencilFunc,
                           StencilOp stencilZPassOp,
                           uint8_t stencilWriteMask)
 {
-    _stencilTest = true;
-    _stencilFuncBack = stencilFunc;
-    _stencilRefBack = stencilRef;
-    _stencilMaskBack = stencilMask;
-    _stencilFailOpBack = stencilFailOp;
-    _stencilZFailOpBack = stencilZFailOp;
-    _stencilZPassOpBack = stencilZPassOp;
-    _stencilWriteMaskBack = stencilWriteMask;
+    if (!__data) return;
+    
+    __data[12] = true;
+    __data[20] = (uint32_t)stencilFunc;
+    __data[21] = (uint32_t)stencilRef;
+    __data[22] = (uint32_t)stencilMask;
+    __data[23] = (uint32_t)stencilFailOp;
+    __data[24] = (uint32_t)stencilZFailOp;
+    __data[25] = (uint32_t)stencilZPassOp;
+    __data[26] = (uint32_t)stencilWriteMask;
 }
 
-void Pass::copy(const Pass& pass)
+void Pass::copy(const Pass& pass, uint8_t* buffer)
 {
-    // blending
-    _blend = pass._blend;
-    _blendEq = pass._blendEq;
-    _blendAlphaEq = pass._blendAlphaEq;
-    _blendSrc = pass._blendSrc;
-    _blendDst = pass._blendDst;
-    _blendSrcAlpha = pass._blendSrcAlpha;
-    _blendDstAlpha = pass._blendDstAlpha;
-    _blendColor = pass._blendColor;
+    __byteOffset = pass.__byteOffset;
+    __data = (uint32_t*)(buffer + __byteOffset);
     
-    // depth
-    _depthTest = pass._depthTest;
-    _depthWrite = pass._depthWrite;
-    _depthFunc = pass._depthFunc;
-    
-    // stencil
-    
-    _stencilTest = pass._stencilTest;
-    // front
-    _stencilRefFront = pass._stencilRefFront;
-    _stencilFuncFront = pass._stencilFuncFront;
-    _stencilFailOpFront = pass._stencilFailOpFront;
-    _stencilZFailOpFront = pass._stencilZFailOpFront;
-    _stencilZPassOpFront = pass._stencilZPassOpFront;
-    _stencilWriteMaskFront = pass._stencilWriteMaskFront;
-    _stencilMaskFront = pass._stencilMaskFront;
-    // back
-    _stencilRefBack = pass._stencilRefBack;
-    _stencilFuncBack = pass._stencilFuncBack;
-    _stencilFailOpBack = pass._stencilFailOpBack;
-    _stencilZFailOpBack = pass._stencilZFailOpBack;
-    _stencilZPassOpBack = pass._stencilZPassOpBack;
-    _stencilWriteMaskBack = pass._stencilWriteMaskBack;
-    _stencilMaskBack = pass._stencilMaskBack;
-    
-    // cull mode
-    _cullMode = pass._cullMode;
+//    for (int i = 0; i < __dataLen; i++) {
+//        __data[i] = pass.__data[i];
+//    }
     
     _programName = pass._programName;
 }

@@ -341,11 +341,24 @@ void DeviceGraphics::setTexture(const std::string& name, Texture* texture, int s
     if (slot >= _caps.maxTextureUnits)
     {
         RENDERER_LOGW("Can not set texture %s at stage %d, max texture exceed: %d",
+                      name.c_str(), slot, _caps.maxTextureUnits);
+        return;
+    }
+    
+    _nextState.setTexture(slot, texture->getTarget(), texture->getHandle());
+    setUniformi(name, slot);
+}
+
+void DeviceGraphics::setTexture(const std::string& name, GLuint type, GLuint texID, int slot)
+{
+    if (slot >= _caps.maxTextureUnits)
+    {
+        RENDERER_LOGW("Can not set texture %s at stage %d, max texture exceed: %d",
                  name.c_str(), slot, _caps.maxTextureUnits);
         return;
     }
     
-    _nextState.setTexture(slot, texture);
+    _nextState.setTexture(slot, type, texID);
     setUniformi(name, slot);
 }
 
@@ -361,7 +374,7 @@ void DeviceGraphics::setTextureArray(const std::string& name, const std::vector<
     for (size_t i = 0; i < len; ++i)
     {
         auto slot = slots[i];
-        _nextState.setTexture(slot, textures[i]);
+        _nextState.setTexture(slot, textures[i]->getTarget(), textures[i]->getHandle());
     }
     
     setUniformiv(name, slots.size(), slots.data());
@@ -566,8 +579,8 @@ DeviceGraphics::DeviceGraphics()
     _enabledAtrributes.resize(_caps.maxVertexAttributes);
     
     // Make sure _currentState and _nextState have enough sapce for textures.
-    _currentState.setTexture(_caps.maxTextureUnits, nullptr);
-    _nextState.setTexture(_caps.maxTextureUnits, nullptr);
+    _currentState.setTexture(_caps.maxTextureUnits, 0, 0);
+    _nextState.setTexture(_caps.maxTextureUnits, 0, 0);
     
     glGetIntegerv(GL_FRAMEBUFFER_BINDING, &_defaultFbo);
 }
@@ -643,7 +656,7 @@ void DeviceGraphics::restoreTexture(uint32_t index)
     auto texture = _currentState.getTexture(index);
     if (texture)
     {
-        GL_CHECK(glBindTexture(texture->getTarget(), texture->getHandle()));
+        GL_CHECK(glBindTexture(texture->at(0), texture->at(1)));
     }
     else
     {
@@ -1079,11 +1092,10 @@ void DeviceGraphics::commitTextures()
         if (i >= curTextureSize || curTextureUnits[i] != nextTextureUnits[i])
         {
             auto texture = nextTextureUnits[i];
-            if (texture)
+            if (!texture.empty() && texture[0] && texture[1])
             {
                 GL_CHECK(glActiveTexture(GL_TEXTURE0 + i));
-                GL_CHECK(glBindTexture(texture->getTarget(),
-                                       texture->getHandle()));
+                GL_CHECK(glBindTexture(texture[0], texture[1]));
             }
         }
     }

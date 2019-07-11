@@ -37,7 +37,7 @@ Effect::Effect()
 
 void Effect::init(const Vector<Technique*>& techniques,
                const std::unordered_map<std::string, Property>& properties,
-               const std::vector<ValueMap>& defineTemplates)
+                  const std::vector<ValueMap>& defineTemplates)
 {
     _techniques = techniques;
     _properties = properties;
@@ -158,20 +158,41 @@ void Effect::generateKey()
     _definesKey <<= 8;
 }
 
-void Effect::copy(const Effect* effect)
+void Effect::initBuffer(se::Object* jsBuffer)
 {
+    if (__jsBuffer) {
+        __jsBuffer->unroot();
+        __jsBuffer->decRef();
+    }
+    __jsBuffer = jsBuffer;
+    __jsBuffer->root();
+    __jsBuffer->incRef();
+    __jsBuffer->getTypedArrayData(&__buffer, (size_t*)&__jsBufferLen);
+}
+
+void Effect::copy(const Effect* effect, se::Object* jsBuffer)
+{
+    initBuffer(jsBuffer);
+    
     _hash = effect->_hash;
     auto& otherTech = effect->_techniques;
     for (auto it = otherTech.begin(); it != otherTech.end(); it ++)
     {
         auto tech = new Technique();
         tech->autorelease();
-        tech->copy(**it);
+        tech->copy(**it, __buffer);
         _techniques.pushBack(tech);
     }
     _defineTemplates = effect->_defineTemplates;
     _cachedNameValues = effect->_cachedNameValues;
-    _properties = effect->_properties;
+    
+    _properties.clear();
+    for (auto& property : effect->_properties) {
+        Technique::Parameter newProperty;
+        newProperty.copy(property.second, __buffer);
+        _properties[newProperty.getName()] = newProperty;
+    }
+    
     _definesKey = effect->_definesKey;
 }
 

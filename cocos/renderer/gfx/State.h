@@ -248,16 +248,16 @@ struct State final
     /**
      * Sets the texture for specific texture unit
      */
-    void setTexture(size_t index, Texture* texture);
+    void setTexture(size_t index, GLuint type, GLuint texID);
     /**
      * Gets the specific texture unit
      */
-    Texture* getTexture(size_t index) const;
+    const std::vector<GLuint>* getTexture(size_t index) const;
     
     /**
      * Gets all texture units
      */
-    const std::vector<Texture*>& getTextureUnits() const { return _textureUnits; }
+    const std::vector<std::vector<GLuint>>& getTextureUnits() const { return _textureUnits; }
 
     /**
      * Sets the program used for rendering
@@ -272,7 +272,7 @@ private:
     std::vector<VertexBuffer*> _vertexBuffers;
     std::vector<int32_t> _vertexBufferOffsets;
     IndexBuffer *_indexBuffer;
-    std::vector<Texture*> _textureUnits;
+    std::vector<std::vector<GLuint>> _textureUnits;
     Program *_program;
 };
 

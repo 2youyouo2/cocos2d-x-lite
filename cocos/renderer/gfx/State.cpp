@@ -42,10 +42,10 @@ State::State()
 , blendColor(0xFFFFFFFF)
 , blendEq(BlendOp::ADD)
 , blendAlphaEq(BlendOp::ADD)
-, blendSrc(BlendFactor::ONE)
-, blendDst(BlendFactor::ZERO)
-, blendSrcAlpha(BlendFactor::ONE)
-, blendDstAlpha(BlendFactor::ZERO)
+, blendSrc(BlendFactor::SRC_ALPHA)
+, blendDst(BlendFactor::ONE_MINUS_SRC_ALPHA)
+, blendSrcAlpha(BlendFactor::SRC_ALPHA)
+, blendDstAlpha(BlendFactor::ONE_MINUS_SRC_ALPHA)
 // depth
 , depthTest(false)
 , depthWrite(false)
@@ -100,12 +100,6 @@ State::~State()
     }
 
     RENDERER_SAFE_RELEASE(_indexBuffer);
-
-    for (auto texture : _textureUnits)
-    {
-        RENDERER_SAFE_RELEASE(texture);
-    }
-
     RENDERER_SAFE_RELEASE(_program);
 }
 
@@ -182,11 +176,6 @@ State& State::operator=(const State& o)
             _indexBuffer = o._indexBuffer;
         }
 
-        for (auto texture : _textureUnits)
-        {
-            RENDERER_SAFE_RELEASE(texture);
-        }
-
         if (o._textureUnits.empty())
         {
             _textureUnits.clear();
@@ -197,7 +186,6 @@ State& State::operator=(const State& o)
             for (size_t i = 0, len = o._textureUnits.size(); i < len; ++i)
             {
                 _textureUnits[i] = o._textureUnits[i];
-                RENDERER_SAFE_RETAIN(_textureUnits[i]);
             }
         }
 
@@ -268,10 +256,6 @@ State& State::operator=(State&& o)
         _indexBuffer = o._indexBuffer;
         o._indexBuffer = nullptr;
 
-        for (auto texture : _textureUnits)
-        {
-            RENDERER_SAFE_RELEASE(texture);
-        }
         _textureUnits = std::move(o._textureUnits);
 
         RENDERER_SAFE_RELEASE(_program);
@@ -284,10 +268,10 @@ State& State::operator=(State&& o)
         o.blendColor = 0xFFFFFFFF;
         o.blendEq = BlendOp::ADD;
         o.blendAlphaEq = BlendOp::ADD;
-        o.blendSrc = BlendFactor::ONE;
-        o.blendDst = BlendFactor::ZERO;
-        o.blendSrcAlpha = BlendFactor::ONE;
-        o.blendDstAlpha = BlendFactor::ZERO;
+        o.blendSrc = BlendFactor::SRC_ALPHA;
+        o.blendDst = BlendFactor::ONE_MINUS_SRC_ALPHA;
+        o.blendSrcAlpha = BlendFactor::SRC_ALPHA;
+        o.blendDstAlpha = BlendFactor::ONE_MINUS_SRC_ALPHA;
         // depth
         o.depthTest = false;
         o.depthWrite = false;
@@ -382,28 +366,31 @@ IndexBuffer* State::getIndexBuffer() const
     return _indexBuffer;
 }
 
-void State::setTexture(size_t index, Texture* texture)
+void State::setTexture(size_t index, GLuint type, GLuint texID)
 {
     if (index >= _textureUnits.size())
     {
         _textureUnits.resize(index + 1);
     }
 
-    Texture* oldTexture = _textureUnits[index];
-    if (oldTexture != texture)
-    {
-        RENDERER_SAFE_RELEASE(oldTexture);
-        _textureUnits[index] = texture;
-        RENDERER_SAFE_RETAIN(texture);
+    auto& texture = _textureUnits[index];
+    if (texture.empty()) {
+        texture.resize(2);
     }
+    
+    texture[0] = type;
+    texture[1] = texID;
 }
 
-Texture* State::getTexture(size_t index) const
+const std::vector<GLuint>* State::getTexture(size_t index) const
 {
     if (_textureUnits.empty())
         return nullptr;
     assert(index < _textureUnits.size());
-    return _textureUnits[index];
+    if (_textureUnits[index].empty()) {
+        return nullptr;
+    }
+    return &_textureUnits[index];
 }
 
 void State::setProgram(Program* program)

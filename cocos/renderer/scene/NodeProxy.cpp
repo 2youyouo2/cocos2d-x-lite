@@ -140,7 +140,6 @@ void NodeProxy::addChild(NodeProxy* child)
     _children.pushBack(child);
     *_dirty |= RenderFlow::REORDER_CHILDREN;
     child->setParent(this);
-    child->updateRealOpacity();
 }
 
 void NodeProxy::detachChild(NodeProxy *child, ssize_t childIndex)
@@ -467,7 +466,7 @@ void NodeProxy::updateLocalMatrix()
 void NodeProxy::render(ModelBatcher* batcher, Scene* scene)
 {
     if (!_needVisit || _realOpacity == 0) return;
-
+    
     bool needRender = *_dirty & RenderFlow::RENDER;
     if (_needRender != needRender)
     {
@@ -489,6 +488,7 @@ void NodeProxy::render(ModelBatcher* batcher, Scene* scene)
     if (_assembler && needPostRender) _assembler->postHandle(this, batcher, scene);
 }
 
+// current used by tiled map
 void NodeProxy::visit(ModelBatcher* batcher, Scene* scene)
 {
     if (!_needVisit) return;

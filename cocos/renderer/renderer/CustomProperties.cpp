@@ -37,11 +37,6 @@ CustomProperties::~CustomProperties()
 
 void CustomProperties::setProperty(const std::string name, const Property& property)
 {
-    auto iter = _properties.find(name);
-    if (iter != _properties.end() && iter->second == property)
-    {
-        return;
-    }
     _properties[name] = property;
     _dirty = true;
 }

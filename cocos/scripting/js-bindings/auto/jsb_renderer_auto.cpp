@@ -172,7 +172,7 @@ static bool js_renderer_CustomProperties_setProperty(se::State& s)
         std::string arg0;
         cocos2d::renderer::Technique::Parameter arg1;
         ok &= seval_to_std_string(args[0], &arg0);
-        ok &= seval_to_TechniqueParameter(args[1], &arg1);
+//        ok &= seval_to_TechniqueParameter(args[1], &arg1);
         SE_PRECONDITION2(ok, false, "js_renderer_CustomProperties_setProperty : Error processing arguments");
         cobj->setProperty(arg0, arg1);
         return true;
@@ -259,7 +259,7 @@ static bool js_renderer_Pass_getStencilTest(se::State& s)
     size_t argc = args.size();
     CC_UNUSED bool ok = true;
     if (argc == 0) {
-        bool result = cobj->getStencilTest();
+        bool result = cobj->isStencilTest();
         ok &= boolean_to_seval(result, &s.rval());
         SE_PRECONDITION2(ok, false, "js_renderer_Pass_getStencilTest : Error processing arguments");
         return true;
@@ -719,14 +719,14 @@ static bool js_renderer_Pass_constructor(se::State& s)
         }
     } while(false);
     do {
-        if (argc == 1) {
-            std::string arg0;
-            ok &= seval_to_std_string(args[0], &arg0);
-            if (!ok) { ok = true; break; }
-            cocos2d::renderer::Pass* cobj = new (std::nothrow) cocos2d::renderer::Pass(arg0);
-            s.thisObject()->setPrivateData(cobj);
-            return true;
-        }
+//        if (argc == 1) {
+//            std::string arg0;
+//            ok &= seval_to_std_string(args[0], &arg0);
+//            if (!ok) { ok = true; break; }
+//            cocos2d::renderer::Pass* cobj = new (std::nothrow) cocos2d::renderer::Pass(arg0);
+//            s.thisObject()->setPrivateData(cobj);
+//            return true;
+//        }
     } while(false);
     SE_REPORT_ERROR("wrong number of arguments: %d", (int)argc);
     return false;
@@ -1131,11 +1131,11 @@ static bool js_renderer_Effect_copy(se::State& s)
     const auto& args = s.args();
     size_t argc = args.size();
     CC_UNUSED bool ok = true;
-    if (argc == 1) {
+    if (argc == 2) {
         const cocos2d::renderer::Effect* arg0 = nullptr;
         ok &= seval_to_native_ptr(args[0], &arg0);
         SE_PRECONDITION2(ok, false, "js_renderer_Effect_copy : Error processing arguments");
-        cobj->copy(arg0);
+        cobj->copy(arg0, args[1].toObject());
         return true;
     }
     SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);

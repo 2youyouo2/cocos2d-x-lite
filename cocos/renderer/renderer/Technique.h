@@ -30,8 +30,10 @@
 #include "base/CCVector.h"
 #include "base/CCRef.h"
 #include "../Macro.h"
+#include "cocos/scripting/js-bindings/jswrapper/SeApi.h"
 
 RENDERER_BEGIN
+
 
 class Pass;
 class Texture;
@@ -100,29 +102,13 @@ public:
          *  @brief The default constructor.
          */
         Parameter();
-        /*
-         *  @brief Constructor with integer.
-         */
-        Parameter(const std::string& name, Type type, int* value, uint8_t count = 1);
-        /*
-         *  @brief Constructor with float.
-         */
-        Parameter(const std::string& name, Type type, float* value, uint8_t count = 1);
-        /*
-         *  @brief Constructor with texture.
-         */
-        Parameter(const std::string& name, Type type, Texture* texture);
-        /*
-         *  @brief Constructor with texture array.
-         */
-        Parameter(const std::string& name, Type type, const std::vector<Texture*>& textures);
-        Parameter(const std::string& name, Type type);
         Parameter(const Parameter& rh);
         Parameter(Parameter&& rh);
         ~Parameter();
         
+        void init(const std::string& name, Type type, void* buffer, uint32_t byteOffset, uint32_t byteLength);
+        
         Parameter& operator=(const Parameter& rh);
-        bool operator==(const Parameter& rh);
         
         /*
          *  @brief Gets the uniform type.
@@ -152,23 +138,15 @@ public:
          *  @brief Sets directly value.
          */
         inline void setDirectly(bool value) { _directly = value; };
-        
-        /*
-         *  @brief Gets the texture array.
-         */
-        std::vector<Texture*> getTextureArray() const;
+       
         /*
          *  @brief Sets the texture pointer.
          */
         void setTexture(Texture* texture);
-        /*
-         *  @brief Gets the texture pointer.
-         */
-        Texture* getTexture() const;
         
+        void copy (const Parameter& other, uint8_t* buffer);
     private:
         
-        void freeValue();
         void copyValue(const Parameter& rh);
         
         std::string _name = "";
@@ -179,6 +157,7 @@ public:
         
         // It is meaningful if type is not Texture2D or TEXTURE_CUBE.
         uint16_t _bytes = 0;
+        uint32_t _byteOffset = 0;
         bool _directly = false;
     };
     
@@ -220,7 +199,7 @@ public:
     /**
      *  @brief Deep copy from other techique.
      */
-    void copy(const Technique& tech);
+    void copy(const Technique& tech, uint8_t* buffer);
     /**
      *  @brief Get layer.
      */

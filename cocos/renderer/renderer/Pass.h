@@ -28,6 +28,7 @@
 #include <base/CCRef.h>
 #include "../Macro.h"
 #include "../Types.h"
+#include "cocos/scripting/js-bindings/jswrapper/SeApi.h"
 
 RENDERER_BEGIN
 
@@ -58,7 +59,7 @@ public:
      * @brief Constructor with linked program name.
      * @param[in] programName Shader program name
      */
-    Pass(const std::string& programName);
+    Pass(const std::string& programName, uint32_t* data, uint32_t byteOffset);
     Pass() {};
     ~Pass();
     
@@ -78,11 +79,11 @@ public:
      *  @param[in] blendColor Blend constant color value.
      */
     void setBlend(BlendOp blendEq = BlendOp::ADD,
-                  BlendFactor blendSrc = BlendFactor::ONE,
-                  BlendFactor blendDst = BlendFactor::ZERO,
+                  BlendFactor blendSrc = BlendFactor::SRC_ALPHA,
+                  BlendFactor blendDst = BlendFactor::ONE_MINUS_SRC_ALPHA,
                   BlendOp blendAlphaEq = BlendOp::ADD,
-                  BlendFactor blendSrcAlpha = BlendFactor::ONE,
-                  BlendFactor blendDstAlpha = BlendFactor::ZERO,
+                  BlendFactor blendSrcAlpha = BlendFactor::SRC_ALPHA,
+                  BlendFactor blendDstAlpha = BlendFactor::ONE_MINUS_SRC_ALPHA,
                   uint32_t blendColor = 0xffffffff);
     /**
      *  @brief Switch depth test or write, and sets depth test function.
@@ -113,14 +114,7 @@ public:
                         StencilOp stencilZFailOp = StencilOp::KEEP,
                         StencilOp stencilZPassOp = StencilOp::KEEP,
                         uint8_t stencilWriteMask = 0xff);
-    /*
-     *  @brief Sets stencil test enabled or not.
-     */
-    inline void setStencilTest(bool value) { _stencilTest = value; }
-    /**
-     *  @brief Gets stencil test enabled or not.
-     */
-    inline bool getStencilTest() const { return _stencilTest; }
+
     /**
      *  @brief Sets linked program name.
      */
@@ -129,56 +123,62 @@ public:
      *  @brief Gets linked program name.
      */
     inline std::string getProgramName() const { return _programName; }
-    /**
-     *  @brief Disable stencil test.
-     */
-    inline void disableStencilTest() { _stencilTest = false; }
+    
     /**
      *  @brief deep copy from other pass.
      */
-    void copy(const Pass& pass);
+    void copy(const Pass& pass, uint8_t* buffer);
+    
+    
+    // cull mode
+    CullMode getCullMode() const { return (CullMode)__data[0]; }
+    
+    // blending
+    inline bool isBlend () const { return __data[1]; };
+    inline BlendOp getBlendEq () const { return (BlendOp)__data[2]; };
+    inline BlendOp getBlendAlphaEq () const { return (BlendOp)__data[3]; };
+    inline BlendFactor getBlendSrc () const { return (BlendFactor)__data[4]; };
+    inline BlendFactor getBlendDst () const { return (BlendFactor)__data[5]; };
+    inline BlendFactor getBlendSrcAlpha () const { return (BlendFactor)__data[6]; };
+    inline BlendFactor getBlendDstAlpha () const { return (BlendFactor)__data[7]; };
+    inline uint32_t getBlendColor () const { return __data[8]; };
+    
+    
+    // depth
+    inline bool isDepthTest () const { return __data[9]; };;
+    inline bool isDepthWrite () const { return __data[10]; };;
+    inline DepthFunc getDepthFunc () const { return (DepthFunc)__data[11]; };;
+    
+    // stencil
+    inline void setStencilTest(bool value)      const  { __data[12] = value; }
+    inline bool isStencilTest()                const { return __data[12]; }
+    inline void disableStencilTest()            const { __data[12] = false; }
+    
+    // front
+    inline StencilFunc getStencilFuncFront()     const { return (StencilFunc)__data[13]; }
+    inline uint32_t getStencilRefFront()         const { return __data[14]; }
+    inline uint8_t getStencilMaskFront()         const { return __data[15]; }
+    inline StencilOp getStencilFailOpFront()     const { return (StencilOp)__data[16]; }
+    inline StencilOp getStencilZFailOpFront()    const { return (StencilOp)__data[17]; }
+    inline StencilOp getStencilZPassOpFront()    const { return (StencilOp)__data[18]; }
+    inline uint8_t getStencilWriteMaskFront()    const { return __data[19]; }
+    
+    // back
+    inline StencilFunc getStencilFuncBack()      const { return (StencilFunc)__data[20]; }
+    inline uint32_t getStencilRefBack()          const { return __data[21]; }
+    inline uint8_t getStencilMaskBack()          const { return __data[22]; }
+    inline StencilOp getStencilFailOpBack()      const { return (StencilOp)__data[23]; }
+    inline StencilOp getStencilZFailOpBack()     const { return (StencilOp)__data[24]; }
+    inline StencilOp getStencilZPassOpBack()     const { return (StencilOp)__data[25]; }
+    inline uint8_t getStencilWriteMaskBack()     const { return __data[26]; }
     
 private:
     friend class BaseRenderer;
     
-    // blending
-    bool _blend = false;
-    BlendOp _blendEq = BlendOp::ADD;
-    BlendOp _blendAlphaEq = BlendOp::ADD;
-    BlendFactor _blendSrc = BlendFactor::SRC_ALPHA;
-    BlendFactor _blendDst = BlendFactor::ONE_MINUS_SRC_ALPHA;
-    BlendFactor _blendSrcAlpha = BlendFactor::SRC_ALPHA;
-    BlendFactor _blendDstAlpha = BlendFactor::ONE_MINUS_SRC_ALPHA;
-    uint32_t _blendColor = 0xffffffff;
-    
-    // depth
-    bool _depthTest = false;
-    bool _depthWrite = false;
-    DepthFunc _depthFunc = DepthFunc::LESS;
-    
-    // stencil
-    bool _stencilTest = false;
-    // front
-    uint32_t _stencilRefFront = 0;
-    StencilFunc _stencilFuncFront = StencilFunc::ALWAYS;
-    StencilOp _stencilFailOpFront = StencilOp::KEEP;
-    StencilOp _stencilZFailOpFront = StencilOp::KEEP;
-    StencilOp _stencilZPassOpFront = StencilOp::KEEP;
-    uint8_t _stencilWriteMaskFront = 0xff;
-    uint8_t _stencilMaskFront = 0xff;
-    // back
-    uint32_t _stencilRefBack = 0;
-    StencilFunc _stencilFuncBack = StencilFunc::ALWAYS;
-    StencilOp _stencilFailOpBack = StencilOp::KEEP;
-    StencilOp _stencilZFailOpBack = StencilOp::KEEP;
-    StencilOp _stencilZPassOpBack = StencilOp::KEEP;
-    uint8_t _stencilWriteMaskBack = 0xff;
-    uint8_t _stencilMaskBack = 0xff;
-    
-    // cull mode
-    CullMode _cullMode = CullMode::BACK;
-    
     std::string _programName = "";
+    
+    uint32_t* __data = nullptr;
+    uint32_t __byteOffset = 0;
 };
 
 // end of renderer group

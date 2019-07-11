@@ -148,20 +148,20 @@ static bool js_renderer_Effect_setProperty(se::State& s)
     const auto& args = s.args();
     size_t argc = args.size();
     CC_UNUSED bool ok = true;
-    if (argc == 2) {
-        std::string arg0;
-        ok &= seval_to_std_string(args[0], &arg0);
-        SE_PRECONDITION2(ok, false, "js_renderer_Effect_setProperty : Name Error");
-        // get property type by arg0
-        cocos2d::renderer::Technique::Parameter::Type propType = cobj->getProperty(arg0).getType();
-        ok &= (propType != cocos2d::renderer::Technique::Parameter::Type::UNKNOWN);
-        SE_PRECONDITION2(ok, false, "js_renderer_Effect_setProperty : Type Error");
-        cocos2d::renderer::Technique::Parameter arg1(arg0, propType);
-        ok &= seval_to_TechniqueParameter_not_constructor(args[1], &arg1);
-        SE_PRECONDITION2(ok, false, "js_renderer_Effect_setProperty : Error processing arguments");
-        cobj->setProperty(arg0, arg1);
-        return true;
-    }
+//    if (argc == 2) {
+//        std::string arg0;
+//        ok &= seval_to_std_string(args[0], &arg0);
+//        SE_PRECONDITION2(ok, false, "js_renderer_Effect_setProperty : Name Error");
+//        // get property type by arg0
+//        cocos2d::renderer::Technique::Parameter::Type propType = cobj->getProperty(arg0).getType();
+//        ok &= (propType != cocos2d::renderer::Technique::Parameter::Type::UNKNOWN);
+//        SE_PRECONDITION2(ok, false, "js_renderer_Effect_setProperty : Type Error");
+//        cocos2d::renderer::Technique::Parameter arg1(arg0, propType);
+//        ok &= seval_to_TechniqueParameter_not_constructor(args[1], &arg1);
+//        SE_PRECONDITION2(ok, false, "js_renderer_Effect_setProperty : Error processing arguments");
+//        cobj->setProperty(arg0, arg1);
+//        return true;
+//    }
     SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 2);
     return false;
 }
@@ -545,49 +545,91 @@ static bool js_renderer_Effect_init(se::State& s)
     cocos2d::renderer::Effect* cobj = (cocos2d::renderer::Effect*)s.nativeThisObject();
     CC_UNUSED bool ok = true;
     const auto& args = s.args();
-    std::string asset;
-    seval_to_std_string(args[0], &asset);
     cocos2d::Vector<cocos2d::renderer::Technique*> arg0;
     std::unordered_map<std::string, cocos2d::renderer::Technique::Parameter> arg1;
     std::vector<std::unordered_map<std::string, cocos2d::Value>> arg2;
-    ok &= seval_to_EffectAsset(asset, &arg0);
-    ok &= seval_to_EffectProperty(args[1], &arg1);
+    
+    cobj->initBuffer(args[3].toObject());
+    
+    ok &= seval_to_EffectTechniques(args[0], &arg0, cobj->getBuffer());
+    ok &= seval_to_EffectProperty(args[1], &arg1, cobj->getBuffer());
     ok &= seval_to_EffectDefineTemplate(args[2], &arg2);
     SE_PRECONDITION2(ok, false, "js_renderer_Effect_init : Error processing arguments");
+    
     cobj->init(arg0, arg1, arg2);
     return true;
 }
 SE_BIND_FUNC(js_renderer_Effect_init);
 
-static bool js_renderer_CustomProperties_setProperty(se::State& s)
-{
-    cocos2d::renderer::CustomProperties* cobj = (cocos2d::renderer::CustomProperties*)s.nativeThisObject();
-    CC_UNUSED bool ok = true;
-    const auto& args = s.args();
-    std::string arg0;
-    cocos2d::renderer::Technique::Parameter arg1;
-    ok &= seval_to_std_string(args[0], &arg0);
-    ok &= seval_to_TechniqueParameter(args[1], &arg1);
-    SE_PRECONDITION2(ok, false, "js_renderer_CustomProperties_setProperty : Error processing arguments");
-    cobj->setProperty(arg0, arg1);
-    return true;
-}
-SE_BIND_FUNC(js_renderer_CustomProperties_setProperty);
+//static bool js_renderer_Effect_initTechniques(se::State& s)
+//{
+//    cocos2d::renderer::Effect* cobj = (cocos2d::renderer::Effect*)s.nativeThisObject();
+//    CC_UNUSED bool ok = true;
+//    const auto& args = s.args();
+//    cocos2d::Vector<cocos2d::renderer::Technique*> arg0;
+//    ok &= seval_to_EffectTechniques(args[0], &arg0);
+//    SE_PRECONDITION2(ok, false, "js_renderer_Effect_init : Error processing arguments");
+//    cobj->initTechniques(arg0);
+//    return true;
+//}
+//SE_BIND_FUNC(js_renderer_Effect_initTechniques);
+//
+//static bool js_renderer_Effect_initProperties(se::State& s)
+//{
+//    cocos2d::renderer::Effect* cobj = (cocos2d::renderer::Effect*)s.nativeThisObject();
+//    CC_UNUSED bool ok = true;
+//    const auto& args = s.args();
+//    std::unordered_map<std::string, cocos2d::renderer::Technique::Parameter> arg0;
+//    ok &= seval_to_EffectProperty(args[0], &arg0);
+//    SE_PRECONDITION2(ok, false, "js_renderer_Effect_init : Error processing arguments");
+//    cobj->initProperties(arg0);
+//    return true;
+//}
+//SE_BIND_FUNC(js_renderer_Effect_initProperties);
+//
+//static bool js_renderer_Effect_initDefines(se::State& s)
+//{
+//    cocos2d::renderer::Effect* cobj = (cocos2d::renderer::Effect*)s.nativeThisObject();
+//    CC_UNUSED bool ok = true;
+//    const auto& args = s.args();
+//    std::vector<std::unordered_map<std::string, cocos2d::Value>> arg0;
+//    ok &= seval_to_EffectDefineTemplate(args[0], &arg0);
+//    SE_PRECONDITION2(ok, false, "js_renderer_Effect_init : Error processing arguments");
+//    cobj->initDefines(arg0);
+//    return true;
+//}
+//SE_BIND_FUNC(js_renderer_Effect_initDefines);
 
-static bool js_renderer_CustomProperties_define(se::State& s)
-{
-    cocos2d::renderer::CustomProperties* cobj = (cocos2d::renderer::CustomProperties*)s.nativeThisObject();
-    CC_UNUSED bool ok = true;
-    const auto& args = s.args();
-    std::string arg0;
-    cocos2d::Value arg1;
-    ok &= seval_to_std_string(args[0], &arg0);
-    ok &= seval_to_ccvalue(args[1], &arg1);
-    SE_PRECONDITION2(ok, false, "js_renderer_CustomProperties_setProperty : Error processing arguments");
-    cobj->define(arg0, arg1);
-    return true;
-}
-SE_BIND_FUNC(js_renderer_CustomProperties_define);
+
+//static bool js_renderer_CustomProperties_setProperty(se::State& s)
+//{
+//    cocos2d::renderer::CustomProperties* cobj = (cocos2d::renderer::CustomProperties*)s.nativeThisObject();
+//    CC_UNUSED bool ok = true;
+//    const auto& args = s.args();
+//    std::string arg0;
+//    cocos2d::renderer::Technique::Parameter arg1;
+//    ok &= seval_to_std_string(args[0], &arg0);
+//    ok &= seval_to_TechniqueParameter(args[1], &arg1);
+//    SE_PRECONDITION2(ok, false, "js_renderer_CustomProperties_setProperty : Error processing arguments");
+//    cobj->setProperty(arg0, arg1);
+//    return true;
+//}
+//SE_BIND_FUNC(js_renderer_CustomProperties_setProperty);
+//
+//static bool js_renderer_CustomProperties_define(se::State& s)
+//{
+//    cocos2d::renderer::CustomProperties* cobj = (cocos2d::renderer::CustomProperties*)s.nativeThisObject();
+//    CC_UNUSED bool ok = true;
+//    const auto& args = s.args();
+//    std::string arg0;
+//    cocos2d::Value arg1;
+//    ok &= seval_to_std_string(args[0], &arg0);
+//    ok &= seval_to_ccvalue(args[1], &arg1);
+//    SE_PRECONDITION2(ok, false, "js_renderer_CustomProperties_define : Error processing arguments");
+//    cobj->define(arg0, arg1);
+//    return true;
+//}
+//SE_BIND_FUNC(js_renderer_CustomProperties_define);
 
 bool jsb_register_renderer_manual(se::Object* global)
 {
@@ -631,6 +673,9 @@ bool jsb_register_renderer_manual(se::Object* global)
 
     // Effect
     __jsb_cocos2d_renderer_Effect_proto->defineFunction("init", _SE(js_renderer_Effect_init));
+//    __jsb_cocos2d_renderer_Effect_proto->defineFunction("initTechniques", _SE(js_renderer_Effect_initTechniques));
+//    __jsb_cocos2d_renderer_Effect_proto->defineFunction("initProperties", _SE(js_renderer_Effect_initProperties));
+//    __jsb_cocos2d_renderer_Effect_proto->defineFunction("initDefines", _SE(js_renderer_Effect_initDefines));
     
     return true;
 }

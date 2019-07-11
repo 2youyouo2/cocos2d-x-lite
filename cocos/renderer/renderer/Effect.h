@@ -166,11 +166,11 @@ public:
      *  @param[in] blendColor Blend constant color value.
      */
     void setBlend(BlendOp blendEq = BlendOp::ADD,
-                  BlendFactor blendSrc = BlendFactor::ONE,
-                  BlendFactor blendDst = BlendFactor::ZERO,
+                  BlendFactor blendSrc = BlendFactor::SRC_ALPHA,
+                  BlendFactor blendDst = BlendFactor::ONE_MINUS_SRC_ALPHA,
                   BlendOp blendAlphaEq = BlendOp::ADD,
-                  BlendFactor blendSrcAlpha = BlendFactor::ONE,
-                  BlendFactor blendDstAlpha = BlendFactor::ZERO,
+                  BlendFactor blendSrcAlpha = BlendFactor::SRC_ALPHA,
+                  BlendFactor blendDstAlpha = BlendFactor::ONE_MINUS_SRC_ALPHA,
                   uint32_t blendColor = 0xffffffff);
     /**
      *  @brief Sets stencil front-facing function, reference, mask, fail operation, write mask.
@@ -194,7 +194,31 @@ public:
     /**
      *  @brief Deep copy from other effect.
      */
-    void copy(const Effect* effect);
+    void copy(const Effect* effect, se::Object* jsBuffer);
+    
+    void initBuffer(se::Object* jsBuffer);
+    
+    inline uint8_t* getBuffer() const { return __buffer; } 
+    
+    void initTechniques(const Vector<Technique*>& techniques)
+    {
+        _techniques = techniques;
+    }
+    
+    void initProperties(const std::unordered_map<std::string, Property>& properties)
+    {
+        _properties = properties;
+    }
+    
+    void initDefines(const std::vector<ValueMap>& defineTemplates)
+    {
+        _defineTemplates = defineTemplates;
+        
+        for (const auto defineTemplate: _defineTemplates)
+            _cachedNameValues.emplace(defineTemplate.at("name").asString(),
+                                      defineTemplate.at("value"));
+        generateKey();
+    }
 
 private:
     double _hash;
@@ -210,6 +234,10 @@ private:
     static void _updateDefineBitOrder(const ValueMap& nameValues);
     
     void generateKey();
+    
+    se::Object* __jsBuffer = nullptr;
+    uint32_t __jsBufferLen = 0;
+    uint8_t* __buffer = nullptr;
 };
 
 // end of renderer group

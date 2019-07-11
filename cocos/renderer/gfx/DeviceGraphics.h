@@ -210,6 +210,7 @@ public:
      * Sets a texture into a GL texture slot then set to the specified uniform
      */
     void setTexture(const std::string& name, Texture* texture, int slot);
+    void setTexture(const std::string& name, GLuint type, GLuint texID, int slot);
     /**
      * Sets textures array into GL texture slots then set to the specified uniform
      */
