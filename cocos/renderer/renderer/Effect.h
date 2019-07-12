@@ -117,10 +117,7 @@ public:
      *  @brief Sets a define's value.
      */
     void define(const std::string& name, const Value& value);
-    /*
-     *  @brief Gets all define values.
-     */
-    const std::vector<ValueMap>& getDefines() const { return _defineTemplates; }
+    
     /*
      *  @brief Extracts all defines.
      */
@@ -198,33 +195,12 @@ public:
     
     void initBuffer(se::Object* jsBuffer);
     
-    inline uint8_t* getBuffer() const { return __buffer; } 
-    
-    void initTechniques(const Vector<Technique*>& techniques)
-    {
-        _techniques = techniques;
-    }
-    
-    void initProperties(const std::unordered_map<std::string, Property>& properties)
-    {
-        _properties = properties;
-    }
-    
-    void initDefines(const std::vector<ValueMap>& defineTemplates)
-    {
-        _defineTemplates = defineTemplates;
-        
-        for (const auto defineTemplate: _defineTemplates)
-            _cachedNameValues.emplace(defineTemplate.at("name").asString(),
-                                      defineTemplate.at("value"));
-        generateKey();
-    }
+    inline uint8_t* getBuffer() const { return __buffer; }
 
 private:
     double _hash;
     int32_t _definesKey;
     Vector<Technique*> _techniques;
-    std::vector<ValueMap> _defineTemplates;
     ValueMap _cachedNameValues;
     std::unordered_map<std::string, Property> _properties;
     

@@ -41,9 +41,8 @@ void Effect::init(const Vector<Technique*>& techniques,
 {
     _techniques = techniques;
     _properties = properties;
-    _defineTemplates = defineTemplates;
     
-    for (const auto defineTemplate: _defineTemplates)
+    for (const auto defineTemplate: defineTemplates)
         _cachedNameValues.emplace(defineTemplate.at("name").asString(),
                                   defineTemplate.at("value"));
     generateKey();
@@ -58,7 +57,6 @@ Effect::~Effect()
 void Effect::clear()
 {
     _techniques.clear();
-    _defineTemplates.clear();
 }
 
 Technique* Effect::getTechnique(const std::string& stage) const
@@ -78,31 +76,16 @@ Technique* Effect::getTechnique(const std::string& stage) const
 
 Value Effect::getDefine(const std::string& name) const
 {
-    for (const auto& def : _defineTemplates)
-    {
-        if (name == def.at("name").asString())
-            return def.at("value");
-    }
-    
-    RENDERER_LOGW("Failed to set define %s, define not found.", name.c_str());
-    return Value::Null;
+    return _cachedNameValues.at(name);
 }
 
 void Effect::define(const std::string& name, const Value& value)
 {
-    for (auto& def : _defineTemplates)
+    if (_cachedNameValues[name] != value)
     {
-        if (name == def.at("name").asString())
-        {
-            def["value"] = value;
-            if (_cachedNameValues[name] != value)
-            {
-                _cachedNameValues[name] = value;
-                generateKey();
-            }
-            return;
-        }
-    };
+        _cachedNameValues[name] = value;
+        generateKey();
+    }
 }
 
 ValueMap* Effect::extractDefines()
@@ -183,7 +166,6 @@ void Effect::copy(const Effect* effect, se::Object* jsBuffer)
         tech->copy(**it, __buffer);
         _techniques.pushBack(tech);
     }
-    _defineTemplates = effect->_defineTemplates;
     _cachedNameValues = effect->_cachedNameValues;
     
     _properties.clear();
