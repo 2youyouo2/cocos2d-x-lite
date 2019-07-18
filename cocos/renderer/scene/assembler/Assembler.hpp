@@ -47,22 +47,6 @@ class ModelBatcher;
  * @{
  */
 
-/**
- *  @brief The render handle is a system handle which occupies rendering datas.\n
- *  It's kind of a cpp delegate for js RenderComponent and should be created and updated by js RenderComponent.\n
- *  It update local vertex data to world vertex data if necessary, commit all render datas to the shared vertex and index buffer.\n
- *  JS API: renderer.RenderHandle
- @code
- // RenderHandle will be automatically created when create a render component
- let node = new cc.Node();
- let sprite = node.addComponent(cc.Sprite);
- sprite._renderHandle;
- 
- // You can also create a RenderHandle by yourself, but you will also need to bind a render component manually
- let renderHandle = new renderer.RenderHandle();
- renderHandle.bind(renderComponent);
- @endcode
- */
 class Assembler : public AssemblerBase
 {
 public:
@@ -102,9 +86,9 @@ public:
      *  @brief Fills render data in given index to the MeshBuffer
      *  @param[in] buffer The shared mesh buffer
      *  @param[in] index The index of render data to be updated
-     *  @param[in] worldMat The world transform matrix
+     *  @param[in] node
      */
-    virtual void fillBuffers(MeshBuffer* buffer, std::size_t index, const Mat4& worldMat);
+    virtual void fillBuffers(NodeProxy* node, MeshBuffer* buffer, std::size_t index);
     
     /**
      *  @brief Sets IArenderDataList
@@ -128,15 +112,15 @@ public:
     virtual void updateOpacity(std::size_t index, uint8_t opacity);
     
     /**
-     *  @brief Enable opacity always dirty, it will update per frame.
+     *  @brief ignore opacity flag, it will always not update vertices opacity
      */
-    void enableOpacityAlwaysDirty() { _opacityAlwaysDirty = true; }
+    void ignoreOpacityFlag() { _ignoreOpacityFlag = true; }
     
     /**
-     *  @brief Is opacity always dirty.
-     *  @return _opacityAlwaysDirty
+     *  @brief Is ignore opacity.
+     *  @return _ignoreOpacityFlag
      */
-    bool isOpacityAlwaysDirty() { return _opacityAlwaysDirty; }
+    bool isIgnoreOpacityFlag() { return _ignoreOpacityFlag; }
     
     /**
      *  @brief Enable ignore world matrix.
@@ -212,7 +196,7 @@ protected:
     const VertexFormat::Element* _vfColor = nullptr;
     
     bool _ignoreWorldMatrix = false;
-    bool _opacityAlwaysDirty = false;
+    bool _ignoreOpacityFlag = false;
     
     CustomProperties* _customProp = nullptr;
 };

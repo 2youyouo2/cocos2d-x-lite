@@ -1484,7 +1484,6 @@ bool ccvaluevector_to_EffectPass(const cocos2d::ValueVector& v, cocos2d::Vector<
     {
         cocos2d::ValueMap valMap;
         valMap = value.asValueMap();
-//        cocos2d::renderer::Pass* cobj = new (std::nothrow) cocos2d::renderer::Pass(valMap["_programName"].asString());
 
         
 //        // cull mode
@@ -1703,7 +1702,7 @@ bool seval_to_EffectTechnique(const se::Value& v, cocos2d::renderer::Technique**
         }
         else
         {
-            stages.push_back(std::move("opaque"));
+            stages.push_back("opaque");
         }
         
         int layer = 0;

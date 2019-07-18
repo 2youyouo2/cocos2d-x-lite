@@ -6089,6 +6089,16 @@ float
 },
 
 /**
+ * @method render
+ * @param {float} arg0
+ */
+render : function (
+float 
+)
+{
+},
+
+/**
  * @method initWithUUID
  * @param {String} arg0
  */
@@ -6735,6 +6745,42 @@ float
  * @constructor
  */
 SkeletonAnimation : function (
+)
+{
+},
+
+};
+
+/**
+ * @class SkeletonDataMgr
+ */
+spine.SkeletonDataMgr = {
+
+/**
+ * @method setDestroyCallback
+ * @param {function} arg0
+ */
+setDestroyCallback : function (
+func 
+)
+{
+},
+
+/**
+ * @method getInstance
+ * @return {sp.SkeletonDataMgr}
+ */
+getInstance : function (
+)
+{
+    return sp.SkeletonDataMgr;
+},
+
+/**
+ * @method SkeletonDataMgr
+ * @constructor
+ */
+SkeletonDataMgr : function (
 )
 {
 },

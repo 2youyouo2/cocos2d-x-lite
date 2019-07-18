@@ -69,7 +69,7 @@ private:
     void submitLightsUniforms();
     void submitShadowStageUniforms(const View& view);
     void submitOtherStagesUniforms();
-    void updateShaderDefines(StageItem& item);
+    void updateShaderDefines(const StageItem& item);
     void sortItems(std::vector<StageItem>& items);
     void drawItems(const std::vector<StageItem>& items);
     void opaqueStage(const View& view, const std::vector<StageItem>& items);
@@ -85,7 +85,7 @@ private:
     Vector<Light*> _ambientLights;
     
     RecyclePool<float>* _arrayPool = nullptr;
-    ValueMap* _defines = nullptr;
+    ValueMap _defines;
     
     int _width = 0;
     int _height = 0;

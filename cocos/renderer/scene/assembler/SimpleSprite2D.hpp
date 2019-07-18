@@ -24,33 +24,16 @@
 
 #pragma once
 
-#include <stdio.h>
-#include "../Macro.h"
-#include "Technique.h"
-#include "base/CCValue.h"
+#include "AssemblerSprite.hpp"
 
 RENDERER_BEGIN
 
-class CustomProperties
+class SimpleSprite2D: public AssemblerSprite
 {
 public:
-    using Property = Technique::Parameter;
-    
-    CustomProperties();
-    ~CustomProperties();
-    
-    void setProperty(const std::string name, const Property& property);
-    const Property& getProperty(std::string name) const;
-    void define(const std::string& name, const Value& value);
-    Value getDefine(const std::string& name) const;
-    std::unordered_map<std::string, Property>* extractProperties();
-    ValueMap* extractDefines();
-    const double getHash() const {return _hash; };
-private:
-    std::unordered_map<std::string, Property> _properties;
-    ValueMap _defines;
-    double _hash = 0;
-    bool _dirty = false;
+    SimpleSprite2D();
+    virtual ~SimpleSprite2D();
+    virtual void fillBuffers(NodeProxy* node, MeshBuffer* buffer, std::size_t index) override;
 };
 
 RENDERER_END

@@ -21,7 +21,6 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  ****************************************************************************/
-
 #include "ProgramLib.h"
 #include "../gfx/Program.h"
 #include "gfx/DeviceGraphics.h"
@@ -34,38 +33,67 @@
 namespace {
     uint32_t _shdID = 0;
 
-    std::string generateDefines(const cocos2d::ValueMap& defMap)
+    std::string generateDefines(const std::vector<cocos2d::ValueMap*>& definesList)
     {
         std::string ret;
         std::string v;
-        for (const auto& def : defMap)
-        {
-            if (def.second.getType() == cocos2d::Value::Type::BOOLEAN)
-            {
-                v = def.second.asBool() ? "1" : "0";
-                ret += "#define "  + def.first + " " + v + "\n";
-            }
-        }
-        return ret;
-    }
-
-    std::string replaceMacroNums(const std::string str, const cocos2d::ValueMap& defMap)
-    {
         cocos2d::ValueMap cache;
-        std::string tmp = str;
-        for (const auto& def : defMap)
+        for (int i = (int)definesList.size() - 1; i >= 0; i--)
         {
-            if (def.second.getType() == cocos2d::Value::Type::INTEGER || def.second.getType() == cocos2d::Value::Type::UNSIGNED)
+            cocos2d::ValueMap* defMap = definesList[i];
+            for (const auto& def : *defMap)
             {
+                if (cache.find(def.first) != cache.end())
+                {
+                    continue;
+                }
+                
+                if (def.second.getType() == cocos2d::Value::Type::BOOLEAN)
+                {
+                    v = def.second.asBool() ? "1" : "0";
+                }
+                else
+                {
+                    v = std::to_string(def.second.asUnsignedInt());
+                }
+                
+                ret += "#define "  + def.first + " " + v + "\n";
+                
                 cache.emplace(def.first, def.second);
             }
         }
+       
+        return ret;
+    }
 
+    std::string replaceMacroNums(const std::string str, const std::vector<cocos2d::ValueMap*>& definesList)
+    {
+        cocos2d::ValueMap cache;
+        std::string tmp = str;
+        for (int i = (int)definesList.size() - 1; i >= 0; i--)
+        {
+            cocos2d::ValueMap* defMap = definesList[i];
+
+            for (const auto& def : *defMap)
+            {
+                if (cache.find(def.first) != cache.end())
+                {
+                    continue;
+                }
+                
+                if (def.second.getType() == cocos2d::Value::Type::INTEGER || def.second.getType() == cocos2d::Value::Type::UNSIGNED)
+                {
+                    cache.emplace(def.first, def.second);
+                }
+            }
+        }
+        
         for (const auto& def : cache)
         {
             std::regex pattern(def.first);
             tmp = std::regex_replace(tmp, pattern, def.second.asString());
         }
+        
         return tmp;
     }
 
@@ -182,26 +210,54 @@ void ProgramLib::define(const std::string& name, const std::string& vert, const 
 
     std::string newVert = vert;
     std::string newFrag = frag;
-
-    std::size_t begin = newVert.find(_precisionReplace);
-    if (begin != std::string::npos)
+    
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC) || (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
+    std::string::size_type pos = 0;
+    pos = newVert.find(_precisionVert);
+    if (pos != std::string::npos)
     {
-        newVert.replace(begin, strlen(_precisionReplace), _precision);
-    }
-    else
-    {
-        newVert = _precision + vert;
+        newVert.replace(pos, strlen(_precisionVert), "");
     }
     
-    begin = newFrag.find(_precisionReplace);
-    if (begin != std::string::npos)
+    pos = newFrag.find(_precisionFrag);
+    if (pos != std::string::npos)
     {
-        newFrag.replace(begin, strlen(_precisionReplace), _precision);
+        newFrag.replace(pos, strlen(_precisionFrag), "");
     }
-    else
+    
+    while((pos = newVert.find(_mediump)) != std::string::npos)
     {
-        newFrag = _precision + frag;
+        newVert.replace(pos, strlen(_mediump), "");
     }
+    
+    while((pos = newFrag.find(_mediump)) != std::string::npos)
+    {
+        newFrag.replace(pos, strlen(_mediump), "");
+    }
+    
+    while((pos = newVert.find(_lowp)) != std::string::npos)
+    {
+        newVert.replace(pos, strlen(_lowp), "");
+    }
+    
+    while((pos = newFrag.find(_lowp)) != std::string::npos)
+    {
+        newFrag.replace(pos, strlen(_lowp), "");
+    }
+#else
+    std::string::size_type pos = 0;
+    pos = newVert.find(_precisionVert);
+    if (pos == std::string::npos)
+    {
+        newVert = _precisionVertReplace + vert;
+    }
+    
+    pos = newVert.find(_precisionFrag);
+    if (pos == std::string::npos)
+    {
+        newFrag = _precisionFragReplace + frag;
+    }
+#endif
     
     // store it
     auto& templ = _templates[name];
@@ -212,18 +268,44 @@ void ProgramLib::define(const std::string& name, const std::string& vert, const 
     templ.defines = defines;
 }
 
-uint32_t ProgramLib::getKey(const std::string& name, int32_t ekey)
+std::string ProgramLib::getKey(const std::string& name, const std::vector<ValueMap*>& definesList)
 {
     auto iter = _templates.find(name);
     assert(iter != _templates.end());
-
-    auto& tmpl = iter->second;
-    return ekey | tmpl.id;
+    
+    uint32_t key = 0;
+    uint32_t offset = 0;
+    for (const auto& tmpl : iter->second.defines)
+    {
+        auto& temp = tmpl.asValueMap();
+        const Value& value = getValueFromDefineList(temp.find("name")->second.asString(), definesList);
+        if (value == Value::Null)
+        {
+            continue;
+        }
+        
+        uint32_t vkey = getValueKey(value);
+        
+        key |= vkey << offset;
+        
+        if (value.getType() != Value::Type::BOOLEAN)
+        {
+            offset += ceil(log2(vkey));
+        }
+        else
+        {
+            offset += 1;
+        }
+    }
+    
+    // return key << 8 | tmpl.id;
+    // key number maybe bigger than 32 bit, need use string to store value.
+    return std::to_string(iter->second.id) + ":" + std::to_string(key);
 }
 
-Program* ProgramLib::getProgram(const std::string& name, const ValueMap& defines, int32_t definesKey)
+Program* ProgramLib::getProgram(const std::string& name, const std::vector<ValueMap*>& definesList)
 {
-    uint32_t key = getKey(name, definesKey);
+    std::string key = getKey(name, definesList);
     auto iter = _cache.find(key);
     if (iter != _cache.end()) {
         iter->second->retain();
@@ -236,10 +318,10 @@ Program* ProgramLib::getProgram(const std::string& name, const ValueMap& defines
     if (templIter != _templates.end())
     {
         const auto& tmpl = templIter->second;
-        std::string customDef = generateDefines(defines) + "\n";
-        std::string vert = replaceMacroNums(tmpl.vert, defines);
+        std::string customDef = generateDefines(definesList) + "\n";
+        std::string vert = replaceMacroNums(tmpl.vert, definesList);
         vert = customDef + unrollLoops(vert);
-        std::string frag = replaceMacroNums(tmpl.frag, defines);
+        std::string frag = replaceMacroNums(tmpl.frag, definesList);
         frag = customDef + unrollLoops(frag);
         
         program = new Program();
@@ -251,15 +333,31 @@ Program* ProgramLib::getProgram(const std::string& name, const ValueMap& defines
     return program;
 }
 
-Value ProgramLib::getValueFromDefineList(const std::string& name, ValueMap* defineList)
+Value ProgramLib::getValueFromDefineList(const std::string& name, const std::vector<ValueMap*>& definesList)
 {
-    auto iter = defineList->find(name);
-    if (iter != defineList->end())
+    for (int i = (int)definesList.size() - 1; i >= 0; i--)
     {
-        return iter->second;
+        ValueMap* defines = definesList[i];
+        auto iter = defines->find(name);
+        if (iter != defines->end())
+        {
+            return iter->second;
+        }
     }
     
     return Value::Null;
+}
+
+uint32_t ProgramLib::getValueKey(const Value &v)
+{
+    if (v.getType() == Value::Type::BOOLEAN)
+    {
+        return v.asBool() ? 1 : 0;
+    }
+    else
+    {
+        return v.asUnsignedInt();
+    }
 }
 
 RENDERER_END

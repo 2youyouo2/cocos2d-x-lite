@@ -40,9 +40,8 @@ class ParallelTask
 public:
     
     enum RunFlag{
-        ToProcess = 0x00,
-        ProcessFinished = 0x01,
-        Wait = 0x02,
+        Begin = 0x00,
+        Stop = 0x01,
     };
     
     typedef std::function<void(int)> Task;
@@ -58,8 +57,9 @@ public:
     void init(int threadNum);
     void destroy();
     
-    void stop();
-    void begin();
+    void waitAllThreads();
+    void stopAllThreads();
+    void beginAllThreads();
 private:
     void joinThread(int tid);
     void setThread(int tid);

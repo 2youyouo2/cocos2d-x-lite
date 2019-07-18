@@ -9,10 +9,7 @@ extern se::Class* __jsb_cocos2d_renderer_ProgramLib_class;
 
 bool js_register_cocos2d_renderer_ProgramLib(se::Object* obj);
 bool register_all_renderer(se::Object* obj);
-SE_DECLARE_FUNC(js_renderer_ProgramLib_getProgram);
 SE_DECLARE_FUNC(js_renderer_ProgramLib_define);
-SE_DECLARE_FUNC(js_renderer_ProgramLib_getValueFromDefineList);
-SE_DECLARE_FUNC(js_renderer_ProgramLib_getKey);
 SE_DECLARE_FUNC(js_renderer_ProgramLib_ProgramLib);
 
 extern se::Object* __jsb_cocos2d_renderer_CustomProperties_proto;
@@ -20,7 +17,6 @@ extern se::Class* __jsb_cocos2d_renderer_CustomProperties_class;
 
 bool js_register_cocos2d_renderer_CustomProperties(se::Object* obj);
 bool register_all_renderer(se::Object* obj);
-SE_DECLARE_FUNC(js_renderer_CustomProperties_setProperty);
 SE_DECLARE_FUNC(js_renderer_CustomProperties_define);
 SE_DECLARE_FUNC(js_renderer_CustomProperties_CustomProperties);
 
@@ -64,6 +60,7 @@ extern se::Class* __jsb_cocos2d_renderer_AssemblerBase_class;
 
 bool js_register_cocos2d_renderer_AssemblerBase(se::Object* obj);
 bool register_all_renderer(se::Object* obj);
+SE_DECLARE_FUNC(js_renderer_AssemblerBase_disableDirty);
 SE_DECLARE_FUNC(js_renderer_AssemblerBase_reset);
 SE_DECLARE_FUNC(js_renderer_AssemblerBase_setUseModel);
 SE_DECLARE_FUNC(js_renderer_AssemblerBase_isDirty);
@@ -158,8 +155,8 @@ extern se::Class* __jsb_cocos2d_renderer_Light_class;
 
 bool js_register_cocos2d_renderer_Light(se::Object* obj);
 bool register_all_renderer(se::Object* obj);
-SE_DECLARE_FUNC(js_renderer_Light_getShadowScale);
 SE_DECLARE_FUNC(js_renderer_Light_getRange);
+SE_DECLARE_FUNC(js_renderer_Light_setShadowFrustumSize);
 SE_DECLARE_FUNC(js_renderer_Light_setShadowResolution);
 SE_DECLARE_FUNC(js_renderer_Light_getFrustumEdgeFalloff);
 SE_DECLARE_FUNC(js_renderer_Light_setSpotExp);
@@ -172,6 +169,7 @@ SE_DECLARE_FUNC(js_renderer_Light_getShadowDarkness);
 SE_DECLARE_FUNC(js_renderer_Light_getSpotAngle);
 SE_DECLARE_FUNC(js_renderer_Light_getDirectionUniform);
 SE_DECLARE_FUNC(js_renderer_Light_getSpotExp);
+SE_DECLARE_FUNC(js_renderer_Light_setShadowDepthScale);
 SE_DECLARE_FUNC(js_renderer_Light_getViewPorjMatrix);
 SE_DECLARE_FUNC(js_renderer_Light_getType);
 SE_DECLARE_FUNC(js_renderer_Light_getColorUniform);
@@ -188,11 +186,11 @@ SE_DECLARE_FUNC(js_renderer_Light_setShadowDarkness);
 SE_DECLARE_FUNC(js_renderer_Light_setWorldMatrix);
 SE_DECLARE_FUNC(js_renderer_Light_setSpotAngle);
 SE_DECLARE_FUNC(js_renderer_Light_setRange);
-SE_DECLARE_FUNC(js_renderer_Light_setShadowScale);
 SE_DECLARE_FUNC(js_renderer_Light_setColor);
 SE_DECLARE_FUNC(js_renderer_Light_setShadowMaxDepth);
 SE_DECLARE_FUNC(js_renderer_Light_setFrustumEdgeFalloff);
 SE_DECLARE_FUNC(js_renderer_Light_getShadowResolution);
+SE_DECLARE_FUNC(js_renderer_Light_getShadowDepthScale);
 SE_DECLARE_FUNC(js_renderer_Light_getShadowType);
 SE_DECLARE_FUNC(js_renderer_Light_setShadowBias);
 SE_DECLARE_FUNC(js_renderer_Light_Light);
@@ -243,14 +241,15 @@ extern se::Class* __jsb_cocos2d_renderer_Assembler_class;
 bool js_register_cocos2d_renderer_Assembler(se::Object* obj);
 bool register_all_renderer(se::Object* obj);
 SE_DECLARE_FUNC(js_renderer_Assembler_setVertexFormat);
+SE_DECLARE_FUNC(js_renderer_Assembler_isIgnoreOpacityFlag);
 SE_DECLARE_FUNC(js_renderer_Assembler_ignoreWorldMatrix);
 SE_DECLARE_FUNC(js_renderer_Assembler_updateVerticesRange);
 SE_DECLARE_FUNC(js_renderer_Assembler_setRenderDataList);
 SE_DECLARE_FUNC(js_renderer_Assembler_updateMeshIndex);
 SE_DECLARE_FUNC(js_renderer_Assembler_updateEffect);
-SE_DECLARE_FUNC(js_renderer_Assembler_enableOpacityAlwaysDirty);
 SE_DECLARE_FUNC(js_renderer_Assembler_getCustomProperties);
 SE_DECLARE_FUNC(js_renderer_Assembler_updateIndicesRange);
+SE_DECLARE_FUNC(js_renderer_Assembler_ignoreOpacityFlag);
 SE_DECLARE_FUNC(js_renderer_Assembler_setCustomProperties);
 SE_DECLARE_FUNC(js_renderer_Assembler_Assembler);
 
@@ -271,6 +270,20 @@ bool js_register_cocos2d_renderer_RenderFlow(se::Object* obj);
 bool register_all_renderer(se::Object* obj);
 SE_DECLARE_FUNC(js_renderer_RenderFlow_render);
 SE_DECLARE_FUNC(js_renderer_RenderFlow_RenderFlow);
+
+extern se::Object* __jsb_cocos2d_renderer_AssemblerSprite_proto;
+extern se::Class* __jsb_cocos2d_renderer_AssemblerSprite_class;
+
+bool js_register_cocos2d_renderer_AssemblerSprite(se::Object* obj);
+bool register_all_renderer(se::Object* obj);
+SE_DECLARE_FUNC(js_renderer_AssemblerSprite_setLocalData);
+
+extern se::Object* __jsb_cocos2d_renderer_SimpleSprite2D_proto;
+extern se::Class* __jsb_cocos2d_renderer_SimpleSprite2D_class;
+
+bool js_register_cocos2d_renderer_SimpleSprite2D(se::Object* obj);
+bool register_all_renderer(se::Object* obj);
+SE_DECLARE_FUNC(js_renderer_SimpleSprite2D_SimpleSprite2D);
 
 extern se::Object* __jsb_cocos2d_renderer_MaskAssembler_proto;
 extern se::Class* __jsb_cocos2d_renderer_MaskAssembler_class;
@@ -293,5 +306,12 @@ SE_DECLARE_FUNC(js_renderer_TiledMapAssembler_updateNodes);
 SE_DECLARE_FUNC(js_renderer_TiledMapAssembler_setLayerMoveXY);
 SE_DECLARE_FUNC(js_renderer_TiledMapAssembler_clearNodes);
 SE_DECLARE_FUNC(js_renderer_TiledMapAssembler_TiledMapAssembler);
+
+extern se::Object* __jsb_cocos2d_renderer_SlicedSprite2D_proto;
+extern se::Class* __jsb_cocos2d_renderer_SlicedSprite2D_class;
+
+bool js_register_cocos2d_renderer_SlicedSprite2D(se::Object* obj);
+bool register_all_renderer(se::Object* obj);
+SE_DECLARE_FUNC(js_renderer_SlicedSprite2D_SlicedSprite2D);
 
 #endif //#if (USE_GFX_RENDERER > 0) && (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_MAC || CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)

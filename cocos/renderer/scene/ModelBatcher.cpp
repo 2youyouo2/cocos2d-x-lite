@@ -133,9 +133,9 @@ void ModelBatcher::commit(NodeProxy* node, Assembler* assembler)
     const Mat4& worldMat = useModel && !ignoreWorldMatrix ? nodeWorldMat : Mat4::IDENTITY;
     int cullingMask = node->getCullingMask();
     
-    auto asmDirty = assembler->isDirty(RenderFlow::OPACITY_CHANGED);
-    auto nodeDirty = node->isDirty(RenderFlow::OPACITY_CHANGED);
-    auto needUpdateOpacity = asmDirty || nodeDirty || assembler->isOpacityAlwaysDirty();
+    auto asmDirty = assembler->isDirty(AssemblerBase::VERTICES_OPACITY_CHANGED);
+    auto nodeDirty = node->isDirty(RenderFlow::NODE_OPACITY_CHANGED);
+    auto needUpdateOpacity = (asmDirty || nodeDirty) && !assembler->isIgnoreOpacityFlag();
     
     for (std::size_t i = 0, l = assembler->getIACount(); i < l; ++i)
     {
@@ -170,7 +170,7 @@ void ModelBatcher::commit(NodeProxy* node, Assembler* assembler)
         {
             buffer = getBuffer(vfmt);
         }
-        assembler->fillBuffers(buffer, i, nodeWorldMat);
+        assembler->fillBuffers(node, buffer, i);
     }
 }
 

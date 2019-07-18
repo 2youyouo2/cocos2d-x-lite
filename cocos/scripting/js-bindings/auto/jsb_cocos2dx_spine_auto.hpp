@@ -868,6 +868,7 @@ bool js_register_spine_SkeletonRenderer(se::Object* obj);
 bool register_all_cocos2dx_spine(se::Object* obj);
 SE_DECLARE_FUNC(js_cocos2dx_spine_SkeletonRenderer_setUseTint);
 SE_DECLARE_FUNC(js_cocos2dx_spine_SkeletonRenderer_setTimeScale);
+SE_DECLARE_FUNC(js_cocos2dx_spine_SkeletonRenderer_render);
 SE_DECLARE_FUNC(js_cocos2dx_spine_SkeletonRenderer_initWithUUID);
 SE_DECLARE_FUNC(js_cocos2dx_spine_SkeletonRenderer_setOpacityModifyRGB);
 SE_DECLARE_FUNC(js_cocos2dx_spine_SkeletonRenderer_paused);
@@ -933,5 +934,14 @@ SE_DECLARE_FUNC(js_cocos2dx_spine_SkeletonAnimation_create);
 SE_DECLARE_FUNC(js_cocos2dx_spine_SkeletonAnimation_createWithJsonFile);
 SE_DECLARE_FUNC(js_cocos2dx_spine_SkeletonAnimation_setGlobalTimeScale);
 SE_DECLARE_FUNC(js_cocos2dx_spine_SkeletonAnimation_SkeletonAnimation);
+
+extern se::Object* __jsb_spine_SkeletonDataMgr_proto;
+extern se::Class* __jsb_spine_SkeletonDataMgr_class;
+
+bool js_register_spine_SkeletonDataMgr(se::Object* obj);
+bool register_all_cocos2dx_spine(se::Object* obj);
+SE_DECLARE_FUNC(js_cocos2dx_spine_SkeletonDataMgr_setDestroyCallback);
+SE_DECLARE_FUNC(js_cocos2dx_spine_SkeletonDataMgr_getInstance);
+SE_DECLARE_FUNC(js_cocos2dx_spine_SkeletonDataMgr_SkeletonDataMgr);
 
 #endif //#if USE_SPINE > 0

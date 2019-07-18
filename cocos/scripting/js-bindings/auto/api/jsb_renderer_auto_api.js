@@ -9,22 +9,6 @@ var renderer = renderer || {};
 renderer.ProgramLib = {
 
 /**
- * @method getProgram
- * @param {String} arg0
- * @param {map_object} arg1
- * @param {int} arg2
- * @return {cc.renderer::Program}
- */
-getProgram : function (
-str, 
-map, 
-int 
-)
-{
-    return cc.renderer::Program;
-},
-
-/**
  * @method define
  * @param {String} arg0
  * @param {String} arg1
@@ -38,34 +22,6 @@ str,
 array 
 )
 {
-},
-
-/**
- * @method getValueFromDefineList
- * @param {String} arg0
- * @param {map_object} arg1
- * @return {cc.Value}
- */
-getValueFromDefineList : function (
-str, 
-map 
-)
-{
-    return cc.Value;
-},
-
-/**
- * @method getKey
- * @param {String} arg0
- * @param {int} arg1
- * @return {unsigned int}
- */
-getKey : function (
-str, 
-int 
-)
-{
-    return 0;
 },
 
 /**
@@ -87,18 +43,6 @@ array
  * @class CustomProperties
  */
 renderer.CustomProperties = {
-
-/**
- * @method setProperty
- * @param {String} arg0
- * @param {cc.renderer::Technique::Parameter} arg1
- */
-setProperty : function (
-str, 
-parameter 
-)
-{
-},
 
 /**
  * @method define
@@ -363,6 +307,16 @@ Effect : function (
  * @class AssemblerBase
  */
 renderer.AssemblerBase = {
+
+/**
+ * @method disableDirty
+ * @param {unsigned int} arg0
+ */
+disableDirty : function (
+int 
+)
+{
+},
 
 /**
  * @method reset
@@ -959,16 +913,6 @@ ForwardRenderer : function (
 renderer.Light = {
 
 /**
- * @method getShadowScale
- * @return {float}
- */
-getShadowScale : function (
-)
-{
-    return 0;
-},
-
-/**
  * @method getRange
  * @return {float}
  */
@@ -976,6 +920,16 @@ getRange : function (
 )
 {
     return 0;
+},
+
+/**
+ * @method setShadowFrustumSize
+ * @param {float} arg0
+ */
+setShadowFrustumSize : function (
+float 
+)
+{
 },
 
 /**
@@ -1060,7 +1014,7 @@ getShadowBias : function (
 
 /**
  * @method getShadowDarkness
- * @return {unsigned int}
+ * @return {float}
  */
 getShadowDarkness : function (
 )
@@ -1096,6 +1050,16 @@ getSpotExp : function (
 )
 {
     return 0;
+},
+
+/**
+ * @method setShadowDepthScale
+ * @param {float} arg0
+ */
+setShadowDepthScale : function (
+float 
+)
+{
 },
 
 /**
@@ -1220,10 +1184,10 @@ devicegraphics
 
 /**
  * @method setShadowDarkness
- * @param {unsigned int} arg0
+ * @param {float} arg0
  */
 setShadowDarkness : function (
-int 
+float 
 )
 {
 },
@@ -1253,16 +1217,6 @@ float
  * @param {float} arg0
  */
 setRange : function (
-float 
-)
-{
-},
-
-/**
- * @method setShadowScale
- * @param {float} arg0
- */
-setShadowScale : function (
 float 
 )
 {
@@ -1307,6 +1261,16 @@ int
  * @return {unsigned int}
  */
 getShadowResolution : function (
+)
+{
+    return 0;
+},
+
+/**
+ * @method getShadowDepthScale
+ * @return {float}
+ */
+getShadowDepthScale : function (
 )
 {
     return 0;
@@ -1619,6 +1583,16 @@ vertexformat
 },
 
 /**
+ * @method isIgnoreOpacityFlag
+ * @return {bool}
+ */
+isIgnoreOpacityFlag : function (
+)
+{
+    return false;
+},
+
+/**
  * @method ignoreWorldMatrix
  */
 ignoreWorldMatrix : function (
@@ -1675,14 +1649,6 @@ effect
 },
 
 /**
- * @method enableOpacityAlwaysDirty
- */
-enableOpacityAlwaysDirty : function (
-)
-{
-},
-
-/**
  * @method getCustomProperties
  * @return {cc.renderer::CustomProperties}
  */
@@ -1702,6 +1668,14 @@ updateIndicesRange : function (
 int, 
 int, 
 int 
+)
+{
+},
+
+/**
+ * @method ignoreOpacityFlag
+ */
+ignoreOpacityFlag : function (
 )
 {
 },
@@ -1805,6 +1779,39 @@ RenderFlow : function (
 devicegraphics, 
 scene, 
 forwardrenderer 
+)
+{
+},
+
+};
+
+/**
+ * @class AssemblerSprite
+ */
+renderer.AssemblerSprite = {
+
+/**
+ * @method setLocalData
+ * @param {se::Object} arg0
+ */
+setLocalData : function (
+object 
+)
+{
+},
+
+};
+
+/**
+ * @class SimpleSprite2D
+ */
+renderer.SimpleSprite2D = {
+
+/**
+ * @method SimpleSprite2D
+ * @constructor
+ */
+SimpleSprite2D : function (
 )
 {
 },
@@ -1921,6 +1928,22 @@ int
  * @constructor
  */
 TiledMapAssembler : function (
+)
+{
+},
+
+};
+
+/**
+ * @class SlicedSprite2D
+ */
+renderer.SlicedSprite2D = {
+
+/**
+ * @method SlicedSprite2D
+ * @constructor
+ */
+SlicedSprite2D : function (
 )
 {
 },

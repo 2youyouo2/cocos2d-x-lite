@@ -93,9 +93,9 @@ ValueMap* Effect::extractDefines()
     return &_cachedNameValues;
 }
 
-std::unordered_map<std::string, Effect::Property>& Effect::extractProperties()
+std::unordered_map<std::string, Effect::Property>* Effect::extractProperties()
 {
-    return _properties;
+    return &_properties;
 }
 
 const Effect::Property& Effect::getProperty(const std::string& name) const

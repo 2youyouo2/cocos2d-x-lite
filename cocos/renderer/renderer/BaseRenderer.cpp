@@ -43,6 +43,8 @@ BaseRenderer::BaseRenderer()
     _drawItems = new RecyclePool<DrawItem>([]()mutable->DrawItem*{return new DrawItem();},100);
     _stageInfos = new RecyclePool<StageInfo>([]()mutable->StageInfo*{return new StageInfo();}, 10);
     _views = new RecyclePool<View>([]()mutable->View*{return new View();}, 8);
+    
+    _tmpMat3 = new Mat3();
 }
 
 BaseRenderer::~BaseRenderer()
@@ -64,6 +66,8 @@ BaseRenderer::~BaseRenderer()
     
     delete _views;
     _views = nullptr;
+    
+    _tmpMat3 = nullptr;
 }
 
 bool BaseRenderer::init(DeviceGraphics* device, std::vector<ProgramLib::Template>& programTemplates)
@@ -135,7 +139,7 @@ void BaseRenderer::render(const View& view, const Scene* scene)
     std::vector<StageItem> stageItems;
     for (const auto& stage : view.stages)
     {
-        for (int i = 0, len = _drawItems->getLength(); i < len; i++)
+        for (size_t i = 0, len = _drawItems->getLength(); i < len; i++)
         {
             const DrawItem* item = _drawItems->getData(i);
             auto tech = item->effect->getTechnique(stage);
@@ -147,7 +151,8 @@ void BaseRenderer::render(const View& view, const Scene* scene)
                 stageItem.defines = item->defines;
                 stageItem.technique = tech;
                 stageItem.sortKey = -1;
-
+                stageItem.uniforms = item->uniforms;
+                
                 stageItems.push_back(stageItem);
             }
         }
@@ -158,7 +163,7 @@ void BaseRenderer::render(const View& view, const Scene* scene)
     
     // render stages
     std::unordered_map<std::string, StageCallback>::iterator foundIter;
-    for (int i = 0, len = _stageInfos->getLength(); i < len; i++)
+    for (size_t i = 0, len = _stageInfos->getLength(); i < len; i++)
     {
         const StageInfo* stageInfo = _stageInfos->getData(i);
         foundIter = _stage2fn.find(stageInfo->stage);
@@ -228,14 +233,14 @@ void BaseRenderer::setProperty (Effect::Property& prop)
     {
         if (0 != prop.getCount())
         {
-            if (Technique::Parameter::Type::COLOR3 == propType ||
-                Technique::Parameter::Type::INT3 == propType ||
-                Technique::Parameter::Type::FLOAT3 == propType ||
-                Technique::Parameter::Type::MAT3 == propType)
-            {
-                RENDERER_LOGW("Uinform array of color3/int3/float3/mat3 can not be supported!");
-                return;
-            }
+//            if (Technique::Parameter::Type::COLOR3 == propType ||
+//                Technique::Parameter::Type::INT3 == propType ||
+//                Technique::Parameter::Type::FLOAT3 == propType ||
+//                Technique::Parameter::Type::MAT3 == propType)
+//            {
+//                RENDERER_LOGW("Uinform array of color3/int3/float3/mat3 can not be supported!");
+//                return;
+//            }
             
             uint8_t size = Technique::Parameter::getElements(propType);
             if (size * prop.getCount() > 64)
@@ -264,22 +269,21 @@ void BaseRenderer::draw(const StageItem& item)
     Mat4 worldMatrix = item.model->getWorldMatrix();
     _device->setUniformMat4("cc_matWorld", worldMatrix.m);
 
-    //REFINE: add Mat3
-    worldMatrix.inverse();
-    worldMatrix.transpose();
-    _device->setUniformMat4("cc_mat3WorldIT", worldMatrix.m);
+    Mat3::fromMat4(*_tmpMat3, worldMatrix);
+    _tmpMat3->inverse();
+    _tmpMat3->transpose();
+    _device->setUniformMat4("cc_mat3WorldIT", _tmpMat3->m);
     
     // set technique uniforms
-    auto effect = item.effect;
-    auto& properties = effect->getProperties();
-    for (auto it = properties.begin(); it != properties.end(); it++)
+    for (int i = 0, len = (int)item.uniforms->size(); i < len; i++)
     {
-        Effect::Property& prop = const_cast<Effect::Property&>(it->second);
-        setProperty(prop);
+        std::unordered_map<std::string, Effect::Property>* properties = (*item.uniforms)[i];
+        for (auto& prop : *properties) {
+            setProperty(prop.second);
+        }
     }
     
     auto ia = item.ia;
-    const int32_t& definesKey = item.effect->getDefinesKey();
     // for each pass
     for (const auto& pass : item.technique->getPasses())
     {
@@ -292,14 +296,7 @@ void BaseRenderer::draw(const StageItem& item)
         
         // set primitive type
         _device->setPrimitiveType(ia->_primitiveType);
-        
-        // set program
-        if(!_program || _programName != pass->_programName || _definesKey != definesKey)
-        {
-            _programName = pass->_programName;
-            _definesKey = definesKey;
-            _program = _programLib->getProgram(pass->_programName, *(item.defines), _definesKey);
-        }
+        _program = _programLib->getProgram(pass->_programName, *(item.defines));
         _device->setProgram(_program);
         
         // cull mode

@@ -62,8 +62,9 @@ public:
         Model* model = nullptr;
         InputAssembler *ia = nullptr;
         Effect* effect = nullptr;
-        ValueMap* defines = nullptr;
         Technique* technique = nullptr;
+        std::vector<ValueMap*>* defines = nullptr;
+        std::vector<std::unordered_map<std::string, Effect::Property>*>* uniforms = nullptr;
         int sortKey = -1;
     };
     typedef std::function<void(const View&, const std::vector<StageItem>&)> StageCallback;
@@ -128,6 +129,8 @@ protected:
     RecyclePool<DrawItem>* _drawItems = nullptr;
     RecyclePool<StageInfo>* _stageInfos = nullptr;
     RecyclePool<View>* _views = nullptr;
+    
+    cocos2d::Mat3* _tmpMat3 = nullptr;
 
     CC_DISALLOW_COPY_ASSIGN_AND_MOVE(BaseRenderer);
 };

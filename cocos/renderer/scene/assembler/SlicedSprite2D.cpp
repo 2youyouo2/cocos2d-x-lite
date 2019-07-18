@@ -22,35 +22,36 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#pragma once
-
-#include <stdio.h>
-#include "../Macro.h"
-#include "Technique.h"
-#include "base/CCValue.h"
+#include "SlicedSprite2D.hpp"
+#include "../RenderFlow.hpp"
 
 RENDERER_BEGIN
 
-class CustomProperties
+SlicedSprite2D::SlicedSprite2D()
 {
-public:
-    using Property = Technique::Parameter;
     
-    CustomProperties();
-    ~CustomProperties();
+}
+
+SlicedSprite2D::~SlicedSprite2D()
+{
     
-    void setProperty(const std::string name, const Property& property);
-    const Property& getProperty(std::string name) const;
-    void define(const std::string& name, const Value& value);
-    Value getDefine(const std::string& name) const;
-    std::unordered_map<std::string, Property>* extractProperties();
-    ValueMap* extractDefines();
-    const double getHash() const {return _hash; };
-private:
-    std::unordered_map<std::string, Property> _properties;
-    ValueMap _defines;
-    double _hash = 0;
-    bool _dirty = false;
-};
+}
+
+void SlicedSprite2D::generateWorldVertices()
+{
+    RenderData* data = _datas->getRenderData(0);
+    float* verts = (float*)data->getVertices();
+    
+    auto floatsPerVert = _bytesPerVertex / sizeof(float);
+    for (auto row = 0; row < 4; ++row) {
+        float localRowY = _localData[row * 2 + 1];
+        for (auto col = 0; col < 4; ++col) {
+            float localColX = _localData[col * 2];
+            std::size_t worldIndex = (row * 4 + col) * floatsPerVert;
+            verts[worldIndex] = localColX ;
+            verts[worldIndex + 1] = localRowY;
+        }
+    }
+}
 
 RENDERER_END
