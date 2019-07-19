@@ -141,36 +141,10 @@ static bool js_renderer_Camera_worldToScreen(se::State& s)
 }
 SE_BIND_FUNC(js_renderer_Camera_worldToScreen)
 
-static bool js_renderer_Effect_setProperty(se::State& s)
-{
-    cocos2d::renderer::Effect* cobj = (cocos2d::renderer::Effect*)s.nativeThisObject();
-    SE_PRECONDITION2(cobj, false, "js_renderer_Effect_setProperty : Invalid Native Object");
-    const auto& args = s.args();
-    size_t argc = args.size();
-    CC_UNUSED bool ok = true;
-//    if (argc == 2) {
-//        std::string arg0;
-//        ok &= seval_to_std_string(args[0], &arg0);
-//        SE_PRECONDITION2(ok, false, "js_renderer_Effect_setProperty : Name Error");
-//        // get property type by arg0
-//        cocos2d::renderer::Technique::Parameter::Type propType = cobj->getProperty(arg0).getType();
-//        ok &= (propType != cocos2d::renderer::Technique::Parameter::Type::UNKNOWN);
-//        SE_PRECONDITION2(ok, false, "js_renderer_Effect_setProperty : Type Error");
-//        cocos2d::renderer::Technique::Parameter arg1(arg0, propType);
-//        ok &= seval_to_TechniqueParameter_not_constructor(args[1], &arg1);
-//        SE_PRECONDITION2(ok, false, "js_renderer_Effect_setProperty : Error processing arguments");
-//        cobj->setProperty(arg0, arg1);
-//        return true;
-//    }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 2);
-    return false;
-}
-SE_BIND_FUNC(js_renderer_Effect_setProperty)
-
 static bool js_renderer_Effect_self(se::State& s)
 {
     cocos2d::renderer::Effect* cobj = (cocos2d::renderer::Effect*)s.nativeThisObject();
-    SE_PRECONDITION2(cobj, false, "js_renderer_Effect_setProperty : Invalid Native Object");
+    SE_PRECONDITION2(cobj, false, "js_renderer_Effect_self : Invalid Native Object");
     auto addr = (unsigned long)cobj;
     s.rval().setNumber(addr);
     return true;
@@ -574,10 +548,12 @@ static bool js_renderer_CustomProperties_setProperty(se::State& s)
         SE_PRECONDITION2(ok, false, "js_renderer_CustomProperties_setProperty : Name Error");
         std::uint8_t arg1;
         ok &= seval_to_uint8(args[1], &arg1);
-//        cocos2d::renderer::Technique::Parameter arg2(arg0, static_cast<cocos2d::renderer::Technique::Parameter::Type>(arg1));
-//        ok &= seval_to_TechniqueParameter_not_constructor(args[2], &arg2);
-//        SE_PRECONDITION2(ok, false, "js_renderer_CustomProperties_setProperty : Error processing arguments");
-//        cobj->setProperty(arg0, arg2);
+        SE_PRECONDITION2(ok, false, "js_renderer_CustomProperties_setProperty : Type Error");
+        
+        cocos2d::renderer::Technique::Parameter paramter;
+        paramter.initWithJSObject(arg0, static_cast<cocos2d::renderer::Technique::Parameter::Type>(arg1), args[2].toObject());
+        
+        cobj->setProperty(arg0, paramter);
         return true;
     }
     SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 2);
@@ -601,7 +577,6 @@ bool jsb_register_renderer_manual(se::Object* global)
     js_register_renderer_Technique(ns);
 
     // Effect
-    __jsb_cocos2d_renderer_Effect_proto->defineFunction("setProperty", _SE(js_renderer_Effect_setProperty));
     __jsb_cocos2d_renderer_Effect_proto->defineFunction("self", _SE(js_renderer_Effect_self));
 
     // Light

@@ -107,6 +107,7 @@ public:
         ~Parameter();
         
         void init(const std::string& name, Type type, void* buffer, uint32_t byteOffset, uint32_t byteLength);
+        void initWithJSObject(const std::string& name, Type type, se::Object* jsObject);
         
         Parameter& operator=(const Parameter& rh);
         
@@ -159,6 +160,9 @@ public:
         uint16_t _bytes = 0;
         uint32_t _byteOffset = 0;
         bool _directly = false;
+        
+        // whether buffer is allocated by self
+        bool _selfBuffer = false;
     };
     
     /**

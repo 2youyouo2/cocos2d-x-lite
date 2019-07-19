@@ -117,19 +117,26 @@ void Technique::Parameter::init(const std::string& name, Type type, void* buffer
 
 }
 
+void Technique::Parameter::initWithJSObject(const std::string& name, Type type, se::Object* jsObject) {
+    uint8_t* ptr = nullptr;
+    size_t length = 0;
+    jsObject->getTypedArrayData(&ptr, &length);
+    
+    _selfBuffer = true;
+    
+    _value = malloc(length);
+    memcpy(_value, ptr, length);
+    
+    init(name, type, _value, 0, length);
+}
+
 
 Technique::Parameter::Parameter(Parameter&& rh)
 {
     if (this == &rh)
         return;
     
-    _name = rh._name;
-    _type = rh._type;
-    _value = rh._value;
-    _count = rh._count;
-    _bytes = rh._bytes;
-    
-    rh._value = nullptr;
+    copyValue(rh);
 }
 
 Technique::Parameter::Parameter(const Parameter& rh)
@@ -139,17 +146,18 @@ Technique::Parameter::Parameter(const Parameter& rh)
 
 Technique::Parameter::~Parameter()
 {
+    if (_selfBuffer) {
+        free(_value);
+    }
 }
 
 void Technique::Parameter::copy (const Parameter& other, uint8_t* buffer)
 {
-    _name = other._name;
-    _type = other._type;
-    _count = other._count;
-    _bytes = other._bytes;
-    _byteOffset = other._byteOffset;
+    copyValue(other);
     
-    _value = buffer + _byteOffset;
+    if (!other._selfBuffer) {
+        _value = buffer + _byteOffset;
+    }
 }
 
 Technique::Parameter& Technique::Parameter::operator=(const Parameter& rh)
@@ -175,8 +183,17 @@ void Technique::Parameter::copyValue(const Parameter& rh)
     _type = rh._type;
     _count = rh._count;
     _bytes = rh._bytes;
-    _value = rh._value;
     _byteOffset = rh._byteOffset;
+    _selfBuffer = rh._selfBuffer;
+    
+    if (_selfBuffer) {
+        _value = malloc(_bytes);
+        memcpy(_value, rh._value, _bytes);
+    }
+    else {
+        _value = rh._value;
+    }
+    
 }
 
 // implementation of Technique

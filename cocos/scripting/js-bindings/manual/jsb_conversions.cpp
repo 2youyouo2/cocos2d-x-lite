@@ -1839,110 +1839,6 @@ bool seval_to_EffectDefineTemplate(const se::Value& v, std::vector<cocos2d::Valu
     return true;
 }
 
-bool seval_to_TechniqueParameter_not_constructor(const se::Value& v, cocos2d::renderer::Technique::Parameter* ret)
-{
-//    assert(ret != nullptr);
-//    auto paramType = ret->getType();
-//    switch (paramType)
-//    {
-//        case cocos2d::renderer::Technique::Parameter::Type::INT:
-//        {
-//            int32_t value;
-//            seval_to_int32(v, &value);
-//            cocos2d::renderer::Technique::Parameter param(ret->getName(), paramType, &value);
-//            *ret = std::move(param);
-//            break;
-//        }
-//        case cocos2d::renderer::Technique::Parameter::Type::INT2:
-//        case cocos2d::renderer::Technique::Parameter::Type::INT3:
-//        case cocos2d::renderer::Technique::Parameter::Type::INT4:
-//        {
-//            se::Object* obj = v.toObject();
-//            SE_PRECONDITION2(obj->isTypedArray(), false, "Convert parameter to float array failed!");
-//            uint8_t* data = nullptr;
-//            size_t len = 0;
-//            obj->getTypedArrayData(&data, &len);
-//            uint8_t el = cocos2d::renderer::Technique::Parameter::getElements(paramType);
-//            uint8_t count = (len / sizeof(int)) / el;
-//            cocos2d::renderer::Technique::Parameter param(ret->getName(), paramType, (int*)data, count);
-//            *ret = std::move(param);
-//            break;
-//        }
-//        case cocos2d::renderer::Technique::Parameter::Type::FLOAT:
-//        {
-//            float value;
-//            seval_to_float(v, &value);
-//            cocos2d::renderer::Technique::Parameter param(ret->getName(), paramType, &value);
-//            *ret = std::move(param);
-//            break;
-//        }
-//        case cocos2d::renderer::Technique::Parameter::Type::FLOAT2:
-//        case cocos2d::renderer::Technique::Parameter::Type::FLOAT3:
-//        case cocos2d::renderer::Technique::Parameter::Type::FLOAT4:
-//        case cocos2d::renderer::Technique::Parameter::Type::MAT4:
-//        case cocos2d::renderer::Technique::Parameter::Type::MAT3:
-//        case cocos2d::renderer::Technique::Parameter::Type::MAT2:
-//        case cocos2d::renderer::Technique::Parameter::Type::COLOR3:
-//        case cocos2d::renderer::Technique::Parameter::Type::COLOR4:
-//        {
-//            se::Object* obj = v.toObject();
-//            SE_PRECONDITION2(obj->isTypedArray(), false, "Convert parameter to float array failed!");
-//            uint8_t* data = nullptr;
-//            size_t len = 0;
-//            obj->getTypedArrayData(&data, &len);
-//            uint8_t el = cocos2d::renderer::Technique::Parameter::getElements(paramType);
-//            uint8_t count = (len / sizeof(float)) / el;
-//            cocos2d::renderer::Technique::Parameter param(ret->getName(), paramType, (float*)data, count);
-//            *ret = std::move(param);
-//            break;
-//        }
-//        case cocos2d::renderer::Technique::Parameter::Type::TEXTURE_2D:
-//        case cocos2d::renderer::Technique::Parameter::Type::TEXTURE_CUBE:
-//        {
-//            se::Object* obj = v.toObject();
-//            if (obj->isArray())
-//            {
-//                uint32_t arrLen = 0;
-//                obj->getArrayLength(&arrLen);
-//                if (arrLen == 1)
-//                {
-//                    cocos2d::renderer::Texture* texture = nullptr;
-//                    seval_to_native_ptr(v, &texture);
-//                    cocos2d::renderer::Technique::Parameter param(ret->getName(), paramType, texture);
-//                    *ret = std::move(param);
-//                }
-//                else
-//                {
-//                    std::vector<cocos2d::renderer::Texture*> textures;
-//                    for (uint32_t i = 0; i < arrLen; ++i)
-//                    {
-//                        se::Value texVal;
-//                        obj->getArrayElement(i, &texVal);
-//                        cocos2d::renderer::Texture* tmpTex = nullptr;
-//                        seval_to_native_ptr(texVal, &tmpTex);
-//                        textures.push_back(tmpTex);
-//                    }
-//                    cocos2d::renderer::Technique::Parameter param(ret->getName(), paramType, textures);
-//                    *ret = std::move(param);
-//                }
-//            }
-//            else
-//            {
-//                cocos2d::renderer::Texture* texture = nullptr;
-//                seval_to_native_ptr(v, &texture);
-//                cocos2d::renderer::Technique::Parameter param(ret->getName(), paramType, texture);
-//                *ret = std::move(param);
-//            }
-//            break;
-//        }
-//        default:
-//            assert(false);
-//            break;
-//    }
-    
-    return true;
-}
-
 bool seval_to_TechniqueParameter(const se::Value& v, cocos2d::renderer::Technique::Parameter* ret, uint8_t* buffer)
 {
     assert(ret != nullptr);
@@ -1951,158 +1847,52 @@ bool seval_to_TechniqueParameter(const se::Value& v, cocos2d::renderer::Techniqu
     se::Value tmp;
     std::string name;
     uint8_t size = 0;
-    size_t len = 0;
-    double number = 0.0;
-    void* value = nullptr;
     se::Object* valObj = nullptr;
     cocos2d::renderer::Technique::Parameter::Type type = cocos2d::renderer::Technique::Parameter::Type::UNKNOWN;
     std::vector<cocos2d::renderer::Texture*> textures;
-    cocos2d::renderer::Texture* texture = nullptr;
-
-//    std::vector<std::string> keys;
-//    obj->getAllKeys(&keys);
-//    for (auto& key: keys)
-//    {
-////        SE_LOGD("key: %s\n", key.c_str());
-//    }
 
     bool ok = false;
 
-//    if (obj->getProperty("updateSubImage", &tmp))
-//    {
-//        //IDEA: perhaps it could be cube.
-//        type = cocos2d::renderer::Technique::Parameter::Type::TEXTURE_2D;
-//        size = 1;
-//        seval_to_native_ptr(v, &texture);
-//    }
-//    else
-//    {
-        if (obj->getProperty("name", &tmp))
-        {
-            ok = seval_to_std_string(tmp, &name);
-            SE_PRECONDITION2(ok, false, "Convert Parameter name failed!");
-        }
-
-        if (obj->getProperty("type", &tmp))
-        {
-            uint8_t typeValue = 0;
-            ok = seval_to_uint8(tmp, &typeValue);
-            SE_PRECONDITION2(ok, false, "Convert Parameter type failed!");
-            type = (cocos2d::renderer::Technique::Parameter::Type)typeValue;
-        }
-
-        if (obj->getProperty("size", &tmp))
-        {
-            ok = seval_to_uint8(tmp, &size);
-            SE_PRECONDITION2(ok, false, "Convert Parameter size failed!");
-        }
-
-        if (obj->getProperty("value", &tmp))
-        {
-            
-//            if (tmp.isNumber())
-//            {
-//                number = tmp.toNumber();
-//            }
-//            else if (tmp.isObject())
-//            {
-            if (tmp.isObject()) {
-                valObj = tmp.toObject();
-            }
-            if (valObj && !valObj->isTypedArray()) {
-                valObj = nullptr;
-            }
-//                if (valObj->isArray())
-//                {
-//                    ok = (type == cocos2d::renderer::Technique::Parameter::Type::TEXTURE_2D ||
-//                           type == cocos2d::renderer::Technique::Parameter::Type::TEXTURE_CUBE);
-//                    SE_PRECONDITION2(ok, false, "Convert Parameter val failed!");
-//
-//                    uint32_t arrLen = 0;
-//                    valObj->getArrayLength(&arrLen);
-//                    for (uint32_t i = 0; i < arrLen; ++i)
-//                    {
-//                        se::Value texVal;
-//                        valObj->getArrayElement(i, &texVal);
-//                        cocos2d::renderer::Texture* tmpTex = nullptr;
-//                        seval_to_native_ptr(texVal, &tmpTex);
-//                        textures.push_back(tmpTex);
-//                    }
-//                }
-//                if (valObj->isTypedArray())
-//                {
-//                    uint8_t* data = nullptr;
-//                    if (valObj->getTypedArrayData(&data, &len))
-//                    {
-//                        value = data;
-//                    }
-//                }
-//                else if (valObj->isArrayBuffer())
-//                {
-//                    uint8_t* data = nullptr;
-//                    if (valObj->getArrayBufferData(&data, &len))
-//                    {
-//                        value = data;
-//                    }
-//                }
-//                else
-//                {
-//                    ok = (type == cocos2d::renderer::Technique::Parameter::Type::TEXTURE_2D ||
-//                           type == cocos2d::renderer::Technique::Parameter::Type::TEXTURE_CUBE);
-//
-//                    //SE_PRECONDITION2(ok, false, "Convert Parameter val failed!");
-//                    if (ok)
-//                    {
-//                        seval_to_native_ptr(tmp, &texture);
-//                    }
-//                }
-//            }
-//            else
-//            {
-//                //assert(false);
-//            }
-        }
-//    }
-    
-//    CCASSERT(valObj, "TechniqueParameter value should not be nullptr");
-    if (valObj) {
-        uint8_t* valBuffer;
-        size_t byteLength;
-        valObj->getTypedArrayData(&valBuffer, &byteLength);
-        size_t byteOffset = valBuffer - buffer;
-        ret->init(name, type, valBuffer, byteOffset, byteLength);
+    if (obj->getProperty("name", &tmp))
+    {
+        ok = seval_to_std_string(tmp, &name);
+        SE_PRECONDITION2(ok, false, "Convert Parameter name failed!");
     }
+    
+    if (obj->getProperty("type", &tmp))
+    {
+        uint8_t typeValue = 0;
+        ok = seval_to_uint8(tmp, &typeValue);
+        SE_PRECONDITION2(ok, false, "Convert Parameter type failed!");
+        type = (cocos2d::renderer::Technique::Parameter::Type)typeValue;
+    }
+    
+    if (obj->getProperty("size", &tmp))
+    {
+        ok = seval_to_uint8(tmp, &size);
+        SE_PRECONDITION2(ok, false, "Convert Parameter size failed!");
+    }
+    
+    if (obj->getProperty("value", &tmp))
+    {
+        if (tmp.isObject()) {
+            valObj = tmp.toObject();
+        }
+        if (valObj && !valObj->isTypedArray()) {
+            valObj = nullptr;
+        }
+    }
+    
+    CCASSERT(valObj, "TechniqueParameter value should not be nullptr");
+    
+    uint8_t* valBuffer;
+    size_t byteLength;
+    valObj->getTypedArrayData(&valBuffer, &byteLength);
+    size_t byteOffset = valBuffer - buffer;
+    ret->init(name, type, valBuffer, (uint32_t)byteOffset, (uint32_t)byteLength);
 
     return true;
 }
-
-//bool seval_to_std_vector_TechniqueParameter(const se::Value& v, std::vector<cocos2d::renderer::Technique::Parameter>* ret)
-//{
-//    assert(ret != nullptr);
-//    if (v.isNullOrUndefined())
-//    {
-//        ret->clear();
-//        return true;
-//    }
-//    SE_PRECONDITION2(v.isObject(), false, "Convert parameter to vector of TechniqueParameter failed!");
-//
-//    se::Object* obj = v.toObject();
-//    uint32_t len = 0;
-//    obj->getArrayLength(&len);
-//    ret->reserve(len);
-//    for (uint32_t i = 0; i < len; ++i)
-//    {
-//        se::Value data;
-//        if (obj->getArrayElement(i, &data))
-//        {
-//            cocos2d::renderer::Technique::Parameter parameter;
-//            seval_to_TechniqueParameter(data, &parameter);
-//            ret->push_back(std::move(parameter));
-//        }
-//    }
-//
-//    return true;
-//}
 
 namespace
 {
