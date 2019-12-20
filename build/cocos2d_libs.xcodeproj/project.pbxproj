@@ -1322,6 +1322,10 @@
 		4D5296C9238F78C2007C0817 /* EffectBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D5296C6238F78C2007C0817 /* EffectBase.cpp */; };
 		4D5296CA238F78C2007C0817 /* EffectBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D5296C7238F78C2007C0817 /* EffectBase.h */; };
 		4D5296CB238F78C2007C0817 /* EffectBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D5296C7238F78C2007C0817 /* EffectBase.h */; };
+		4DC0800223AC71ED00641CB7 /* PostEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DC0800023AC71ED00641CB7 /* PostEffect.cpp */; };
+		4DC0800323AC71ED00641CB7 /* PostEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DC0800023AC71ED00641CB7 /* PostEffect.cpp */; };
+		4DC0800423AC71ED00641CB7 /* PostEffect.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DC0800123AC71ED00641CB7 /* PostEffect.h */; };
+		4DC0800523AC71ED00641CB7 /* PostEffect.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DC0800123AC71ED00641CB7 /* PostEffect.h */; };
 		4DC57D211F7A58B5005B6546 /* xxtea.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DC57D1F1F7A58B5005B6546 /* xxtea.cpp */; };
 		4DC57D331F7B840E005B6546 /* xxtea.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DC57D1F1F7A58B5005B6546 /* xxtea.cpp */; };
 		4DCEC126233236D60020F8E3 /* etc2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DCEC124233236D60020F8E3 /* etc2.cpp */; };
@@ -2157,6 +2161,8 @@
 		46FDDC68202D733700931238 /* CCApplication-ios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "CCApplication-ios.mm"; sourceTree = "<group>"; };
 		4D5296C6238F78C2007C0817 /* EffectBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EffectBase.cpp; sourceTree = "<group>"; };
 		4D5296C7238F78C2007C0817 /* EffectBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EffectBase.h; sourceTree = "<group>"; };
+		4DC0800023AC71ED00641CB7 /* PostEffect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PostEffect.cpp; sourceTree = "<group>"; };
+		4DC0800123AC71ED00641CB7 /* PostEffect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PostEffect.h; sourceTree = "<group>"; };
 		4DC57D1F1F7A58B5005B6546 /* xxtea.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = xxtea.cpp; sourceTree = "<group>"; };
 		4DC57D201F7A58B5005B6546 /* xxtea.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xxtea.h; sourceTree = "<group>"; };
 		4DCEC124233236D60020F8E3 /* etc2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = etc2.cpp; sourceTree = "<group>"; };
@@ -3370,7 +3376,10 @@
 		46FDDA2D202ACC6A00931238 /* renderer */ = {
 			isa = PBXGroup;
 			children = (
+				46FDDA2E202ACC6A00931238 /* INode.h */,
 				46FDDA37202ACC6A00931238 /* Renderer.h */,
+				4DC0800123AC71ED00641CB7 /* PostEffect.h */,
+				4DC0800023AC71ED00641CB7 /* PostEffect.cpp */,
 				4D5296C7238F78C2007C0817 /* EffectBase.h */,
 				4D5296C6238F78C2007C0817 /* EffectBase.cpp */,
 				46FDDA45202ACC6A00931238 /* Effect.h */,
@@ -3381,7 +3390,6 @@
 				46FDDA2F202ACC6A00931238 /* Pass.cpp */,
 				46FDDA39202ACC6A00931238 /* Technique.h */,
 				46FDDA41202ACC6A00931238 /* Technique.cpp */,
-				46FDDA2E202ACC6A00931238 /* INode.h */,
 				46FDDA4A202ACC6A00931238 /* Scene.h */,
 				46FDDA30202ACC6A00931238 /* Scene.cpp */,
 				46FDDA32202ACC6A00931238 /* Config.h */,
@@ -3789,6 +3797,7 @@
 				04F0A984234F14BE002C3533 /* Constraint.h in Headers */,
 				0482F1BB228D87970019ECF7 /* MeshBuffer.hpp in Headers */,
 				046E06332185B41100B24E2D /* Animation.h in Headers */,
+				4DC0800423AC71ED00641CB7 /* PostEffect.h in Headers */,
 				50ABBD4A1925AB0000A911A9 /* Mat4.h in Headers */,
 				046E063F2185B41100B24E2D /* AnimationState.h in Headers */,
 				1A52DB38205BCD9200350EE3 /* ScriptEngine.hpp in Headers */,
@@ -4136,6 +4145,7 @@
 				046B688D219FA61200B33469 /* MiddlewareManager.h in Headers */,
 				04F0A9C5234F14BE002C3533 /* PositionMode.h in Headers */,
 				046E06792185B42500B24E2D /* BaseObject.h in Headers */,
+				4DC0800523AC71ED00641CB7 /* PostEffect.h in Headers */,
 				04F0A9A9234F14BE002C3533 /* SpacingMode.h in Headers */,
 				46FDDBB8202ADDCE00931238 /* ccUtils.h in Headers */,
 				046E06552185B41B00B24E2D /* Bone.h in Headers */,
@@ -4646,6 +4656,7 @@
 				04F0AA1E234F14BE002C3533 /* AnimationStateData.cpp in Sources */,
 				04F0A9E6234F14BE002C3533 /* BoundingBoxAttachment.cpp in Sources */,
 				04F0A9E2234F14BE002C3533 /* IkConstraintTimeline.cpp in Sources */,
+				4DC0800223AC71ED00641CB7 /* PostEffect.cpp in Sources */,
 				46FDDA8D202ACC6A00931238 /* Config.cpp in Sources */,
 				46930468204FE20F004A3D6C /* CCLog.cpp in Sources */,
 				1A28FF991F20AFAB007A1D9D /* SRSecurityPolicy.m in Sources */,
@@ -5167,6 +5178,7 @@
 				46FDDAB4202ACC6A00931238 /* VertexBuffer.cpp in Sources */,
 				4617864E205224CF008256E1 /* HttpClient-apple.mm in Sources */,
 				04F0A9B3234F14BE002C3533 /* EventTimeline.cpp in Sources */,
+				4DC0800323AC71ED00641CB7 /* PostEffect.cpp in Sources */,
 				40AEF7AF216D940200729AA5 /* WebViewImpl-ios.mm in Sources */,
 				46FDDB94202ADDCE00931238 /* TGAlib.cpp in Sources */,
 				46FDDB66202ADDCE00931238 /* ccRandom.cpp in Sources */,
