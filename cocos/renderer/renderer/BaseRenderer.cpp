@@ -139,7 +139,7 @@ void BaseRenderer::render(const View& view, const Scene* scene)
     Color4F clearColor;
     if (ClearFlag::COLOR & view.clearFlags)
         clearColor = view.color;
-//    _device->clear(view.clearFlags, &clearColor, view.depth, view.stencil);
+    _device->clear(view.clearFlags, &clearColor, view.depth, view.stencil);
     
     // get all draw items
     _drawItems->reset();
