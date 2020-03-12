@@ -38,6 +38,8 @@
 #include "math/MathUtil.h"
 #include "Program.h"
 
+#include "tracy/Tracy.hpp"
+
 RENDERER_BEGIN
 
 const size_t BaseRenderer::cc_lightDirection = std::hash<std::string>{}("cc_lightDirection");
@@ -123,6 +125,7 @@ void BaseRenderer::registerStage(const std::string& name, const StageCallback& c
 
 void BaseRenderer::render(const View& view, const Scene* scene)
 {
+    ZoneNamedN(Zone1, "BaseRenderer::render", true);
     // setup framebuffer
     _device->setFrameBuffer(view.frameBuffer);
     
@@ -136,7 +139,7 @@ void BaseRenderer::render(const View& view, const Scene* scene)
     Color4F clearColor;
     if (ClearFlag::COLOR & view.clearFlags)
         clearColor = view.color;
-    _device->clear(view.clearFlags, &clearColor, view.depth, view.stencil);
+//    _device->clear(view.clearFlags, &clearColor, view.depth, view.stencil);
     
     // get all draw items
     _drawItems->reset();
@@ -149,6 +152,8 @@ void BaseRenderer::render(const View& view, const Scene* scene)
         DrawItem* drawItem = _drawItems->add();
         model->extractDrawItem(*drawItem);
     }
+    
+//    ZoneNamedN(Zone2, "BaseRenderer::render", true);
     
     // dispatch draw items to different stage
     _stageInfos->reset();
@@ -184,6 +189,8 @@ void BaseRenderer::render(const View& view, const Scene* scene)
         }
     }
     
+//    ZoneNamedN(Zone3, "BaseRenderer::render", true);
+    
     // render stages
     std::unordered_map<std::string, const StageCallback>::iterator foundIter;
     for (size_t i = 0, len = _stageInfos->getLength(); i < len; i++)
@@ -200,6 +207,8 @@ void BaseRenderer::render(const View& view, const Scene* scene)
 
 void BaseRenderer::setProperty (const Effect::Property* prop)
 {
+    ZoneScopedN("BaseRenderer::setProperty");
+    
     Technique::Parameter::Type propType = prop->getType();
     auto& propName = prop->getName();
     auto propHashName = prop->getHashName();
@@ -268,6 +277,7 @@ void BaseRenderer::setProperty (const Effect::Property* prop)
 std::vector<const ValueMap*> BaseRenderer::__tmp_defines__;
 void BaseRenderer::draw(const StageItem& item)
 {
+    ZoneScopedN("BaseRenderer::draw");
     const Mat4& worldMatrix = item.model->getWorldMatrix();
     _device->setUniformMat4(cc_matWorld, worldMatrix);
     
@@ -365,11 +375,13 @@ void BaseRenderer::draw(const StageItem& item)
 
 void BaseRenderer::resetTextureUint()
 {
+    ZoneScopedN("BaseRenderer::resetTextureUint");
     _usedTextureUnits = 0;
 }
 
 int BaseRenderer::allocTextureUnit()
 {
+    ZoneScopedN("BaseRenderer::allocTextureUnit");
     int maxTexureUnits = _device->getCapacity().maxTextureUnits;
     if (_usedTextureUnits >= maxTexureUnits)
         RENDERER_LOGW("Trying to use %d texture uints while this GPU only supports %d", _usedTextureUnits, maxTexureUnits);
@@ -379,12 +391,14 @@ int BaseRenderer::allocTextureUnit()
 
 void BaseRenderer::reset()
 {
+    ZoneScopedN("BaseRenderer::reset");
     _views->reset();
     _stageInfos->reset();
 }
 
 View* BaseRenderer::requestView()
 {
+    ZoneScopedN("BaseRenderer::requestView");
     return _views->add();
 }
 

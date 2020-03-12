@@ -1322,6 +1322,8 @@
 		46FDDC66202D504E00931238 /* CCApplication.h in Headers */ = {isa = PBXBuildFile; fileRef = 46FDDC65202D504D00931238 /* CCApplication.h */; };
 		46FDDC67202D504E00931238 /* CCApplication.h in Headers */ = {isa = PBXBuildFile; fileRef = 46FDDC65202D504D00931238 /* CCApplication.h */; };
 		46FDDC69202D733800931238 /* CCApplication-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 46FDDC68202D733700931238 /* CCApplication-ios.mm */; };
+		4D4A5ED92418A3C200EC52BC /* TracyClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D4A5ED82418A3C200EC52BC /* TracyClient.cpp */; };
+		4D4A5EDA2418A3C200EC52BC /* TracyClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D4A5ED82418A3C200EC52BC /* TracyClient.cpp */; };
 		4D5296C8238F78C2007C0817 /* EffectBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D5296C6238F78C2007C0817 /* EffectBase.cpp */; };
 		4D5296C9238F78C2007C0817 /* EffectBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D5296C6238F78C2007C0817 /* EffectBase.cpp */; };
 		4D5296CA238F78C2007C0817 /* EffectBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D5296C7238F78C2007C0817 /* EffectBase.h */; };
@@ -2161,6 +2163,7 @@
 		46FDDC62202D502E00931238 /* CCApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CCApplication.h; path = ../CCApplication.h; sourceTree = "<group>"; };
 		46FDDC65202D504D00931238 /* CCApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCApplication.h; sourceTree = "<group>"; };
 		46FDDC68202D733700931238 /* CCApplication-ios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "CCApplication-ios.mm"; sourceTree = "<group>"; };
+		4D4A5ED82418A3C200EC52BC /* TracyClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TracyClient.cpp; path = ../cocos/tracy/TracyClient.cpp; sourceTree = "<group>"; };
 		4D5296C6238F78C2007C0817 /* EffectBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EffectBase.cpp; sourceTree = "<group>"; };
 		4D5296C7238F78C2007C0817 /* EffectBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EffectBase.h; sourceTree = "<group>"; };
 		4DC57D1F1F7A58B5005B6546 /* xxtea.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = xxtea.cpp; sourceTree = "<group>"; };
@@ -2766,6 +2769,7 @@
 		1551A334158F2AB200E66CFE = {
 			isa = PBXGroup;
 			children = (
+				4D4A5ED82418A3C200EC52BC /* TracyClient.cpp */,
 				04355811217EADAC00B9C056 /* editor-support */,
 				461DCA3220BBFA2D00B22827 /* ui */,
 				1AAAC877205CB6E9005321B9 /* audio */,
@@ -4803,6 +4807,7 @@
 				046E06372185B41100B24E2D /* AnimationState.cpp in Sources */,
 				046E06BF2185B49F00B24E2D /* BoundingBoxData.cpp in Sources */,
 				4617864720522469008256E1 /* CCDownloaderImpl-apple.mm in Sources */,
+				4D4A5ED92418A3C200EC52BC /* TracyClient.cpp in Sources */,
 				426947B9234ED0130044C66E /* SimpleSprite3D.cpp in Sources */,
 				ED5A63F8236C384C007A0CF0 /* WebSocketServer.cpp in Sources */,
 				1A52DB24205BCD9200350EE3 /* ObjectWrap.cpp in Sources */,
@@ -4917,6 +4922,7 @@
 				04F8563522ABCB9900063A20 /* TiledMapAssembler.cpp in Sources */,
 				1A28FF901F20AFAB007A1D9D /* NSRunLoop+SRWebSocket.m in Sources */,
 				046E06C42185B49F00B24E2D /* ArmatureData.cpp in Sources */,
+				4D4A5EDA2418A3C200EC52BC /* TracyClient.cpp in Sources */,
 				50ABC0161926664800A911A9 /* CCImage.cpp in Sources */,
 				04F0A94F234F14BE002C3533 /* IkConstraintData.cpp in Sources */,
 				425D3FF222D86BEF00BCED11 /* Mat3.cpp in Sources */,
@@ -5341,6 +5347,7 @@
 					"$(inherited)",
 					CC_KEYBOARD_SUPPORT,
 					_USRDLL,
+					TRACY_ENABLE,
 				);
 				HEADER_SEARCH_PATHS = "";
 				LD_DYLIB_INSTALL_NAME = "";
@@ -5395,7 +5402,10 @@
 				EXECUTABLE_PREFIX = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "../cocos/platform/ios/cocos2d-prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					TRACY_ENABLE,
+				);
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = YES;
 				HEADER_SEARCH_PATHS = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;

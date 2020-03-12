@@ -35,6 +35,8 @@
 #include "platform/CCPlatformConfig.h"
 #include "base/CCGLUtils.h"
 
+#include "tracy/Tracy.hpp"
+
 RENDERER_BEGIN
 
 static_assert(sizeof(int) == sizeof(GLint), "ERROR: GLint isn't equal to int!");
@@ -66,6 +68,7 @@ DeviceGraphics* DeviceGraphics::getInstance()
 
 void DeviceGraphics::setFrameBuffer(const FrameBuffer* fb)
 {
+    ZoneScopedN("DeviceGraphics::setFrameBuffer");
     if (fb == _frameBuffer)
         return;
     
@@ -119,6 +122,7 @@ void DeviceGraphics::setFrameBuffer(const FrameBuffer* fb)
 
 void DeviceGraphics::setViewport(int x, int y, int w, int h)
 {
+    ZoneScopedN("DeviceGraphics::setViewport");
     if (_vx != x ||
         _vy != y ||
         _vw != w ||
@@ -149,6 +153,7 @@ void DeviceGraphics::setScissor(int x, int y, int w, int h)
 
 void DeviceGraphics::clear(uint8_t flags, Color4F *color, double depth, int32_t stencil)
 {
+    ZoneScopedN("DeviceGraphics::clear");
     GLbitfield mask = 0;
     if (flags & ClearFlag::COLOR)
     {
@@ -372,6 +377,8 @@ void DeviceGraphics::setPrimitiveType(PrimitiveType type)
 
 void DeviceGraphics::draw(size_t base, GLsizei count)
 {
+    ZoneScopedN("DeviceGraphics::draw");
+    
     commitBlendStates();
     commitDepthStates();
     commitStencilStates();
@@ -440,6 +447,7 @@ void DeviceGraphics::draw(size_t base, GLsizei count)
 
 void DeviceGraphics::setUniform(size_t hashName, const void* v, size_t bytes, UniformElementType elementType, size_t uniformCount)
 {
+    ZoneScopedN("DeviceGraphics::setUniform");
     auto iter = _uniforms.find(hashName);
     if (iter == _uniforms.end())
     {
@@ -667,6 +675,7 @@ void DeviceGraphics::restoreIndexBuffer()
 
 void DeviceGraphics::commitBlendStates()
 {
+    ZoneScopedN("DeviceGraphics::commitBlendStates");
     if (_currentState->blend != _nextState->blend)
     {
         if (!_nextState->blend)
@@ -776,6 +785,7 @@ void DeviceGraphics::commitBlendStates()
 
 void DeviceGraphics::commitDepthStates()
 {
+    ZoneScopedN("DeviceGraphics::commitDepthStates");
     if (_currentState->depthTest != _nextState->depthTest)
     {
         if (!_nextState->depthTest)
@@ -818,6 +828,7 @@ void DeviceGraphics::commitDepthStates()
 
 void DeviceGraphics::commitStencilStates()
 {
+    ZoneScopedN("DeviceGraphics::commitStencilStates");
     if (_currentState->stencilTest != _nextState->stencilTest)
     {
         if (!_nextState->stencilTest)
@@ -983,6 +994,7 @@ void DeviceGraphics::commitStencilStates()
 
 void DeviceGraphics::commitCullMode()
 {
+    ZoneScopedN("DeviceGraphics::commitCullMode");
     if (_currentState->cullMode == _nextState->cullMode)
         return;
     
@@ -997,6 +1009,7 @@ void DeviceGraphics::commitCullMode()
 }
 void DeviceGraphics::commitVertexBuffer()
 {
+    ZoneScopedN("DeviceGraphics::commitVertexBuffer");
     if (-1 == _nextState->maxStream)
     {
         RENDERER_LOGW("VertexBuffer not assigned, please call setVertexBuffer before every draw.");
@@ -1078,6 +1091,7 @@ void DeviceGraphics::commitVertexBuffer()
 
 void DeviceGraphics::commitTextures()
 {
+    ZoneScopedN("DeviceGraphics::commitTextures");
     const auto& curTextureUnits = _currentState->getTextureUnits();
     int curTextureSize = static_cast<int>(curTextureUnits.size());
     const auto& nextTextureUnits = _nextState->getTextureUnits();

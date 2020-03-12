@@ -33,6 +33,8 @@
 #define SUB_RENDER_THREAD_COUNT 1
 #define RENDER_THREAD_COUNT (SUB_RENDER_THREAD_COUNT + 1)
 
+#include "tracy/Tracy.hpp"
+
 RENDERER_BEGIN
 
 const uint32_t InitLevelCount = 3;
@@ -301,6 +303,8 @@ void RenderFlow::calculateWorldMatrix()
 
 void RenderFlow::render(NodeProxy* scene, float deltaTime)
 {
+    ZoneScopedN("RenderFlow::render");
+    
     if (scene != nullptr)
     {
         

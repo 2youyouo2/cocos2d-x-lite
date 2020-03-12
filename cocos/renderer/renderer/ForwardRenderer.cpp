@@ -43,6 +43,8 @@
 
 #include "math/MathUtil.h"
 
+#include "tracy/Tracy.hpp"
+
 RENDERER_BEGIN
 
 #define CC_MAX_LIGHTS 4
@@ -85,6 +87,8 @@ void ForwardRenderer::resetData()
 
 void ForwardRenderer::render(Scene* scene)
 {
+    ZoneScopedN("ForwardRenderer::render");
+    
     resetData();
     updateLights(scene);
     scene->sortCameras();
@@ -124,6 +128,7 @@ void ForwardRenderer::renderCamera(Camera* camera, Scene* scene)
 
 void ForwardRenderer::updateLights(Scene* scene)
 {
+    ZoneScopedN("ForwardRenderer::updateLights");
     _lights.clear();
     _shadowLights.clear();
     
@@ -159,6 +164,7 @@ void ForwardRenderer::updateLights(Scene* scene)
 
 void ForwardRenderer::updateDefines()
 {
+    ZoneScopedN("ForwardRenderer::updateDefines");
     _definesKey = "";
     for (int i = 0; i < _lights.size(); i++)
     {
@@ -182,6 +188,7 @@ void ForwardRenderer::updateDefines()
 
 void ForwardRenderer::submitLightsUniforms()
 {
+    ZoneScopedN("ForwardRenderer::submitLightsUniforms");
     if (_lights.size() > 0)
     {
         size_t count = std::min(CC_MAX_LIGHTS, (int)_lights.size());
@@ -228,6 +235,8 @@ void ForwardRenderer::submitLightsUniforms()
 
 void ForwardRenderer::submitShadowStageUniforms(const View& view)
 {
+    ZoneScopedN("ForwardRenderer::submitShadowStageUniforms");
+    
     static float* shadowInfo = new float[4];
     shadowInfo[0] = view.shadowLight->getShadowMinDepth();
     shadowInfo[1] = view.shadowLight->getShadowMaxDepth();
@@ -241,6 +250,8 @@ void ForwardRenderer::submitShadowStageUniforms(const View& view)
 
 void ForwardRenderer::submitOtherStagesUniforms()
 {
+    ZoneScopedN("ForwardRenderer::submitOtherStagesUniforms");
+    
     size_t count = _shadowLights.size();
     float* shadowLightInfo = _arrayPool->add();
     static float* shadowLightProjs = new float[4 * 16];
@@ -264,6 +275,8 @@ void ForwardRenderer::submitOtherStagesUniforms()
 
 bool ForwardRenderer::compareItems(const StageItem &a, const StageItem &b)
 {
+    ZoneScopedN("ForwardRenderer::compareItems");
+    
     size_t pa = a.passes.size();
     size_t pb = b.passes.size();
     
@@ -276,11 +289,13 @@ bool ForwardRenderer::compareItems(const StageItem &a, const StageItem &b)
 
 void ForwardRenderer::sortItems(std::vector<StageItem>& items)
 {
+    ZoneScopedN("ForwardRenderer::sortItems");
     std::sort(items.begin(), items.end(), compareItems);
 }
 
 void ForwardRenderer::drawItems(const std::vector<StageItem>& items)
 {
+    ZoneScopedN("ForwardRenderer::drawItems");
     size_t count = _shadowLights.size();
     if (count == 0 && _numLights == 0)
     {
@@ -305,6 +320,8 @@ void ForwardRenderer::drawItems(const std::vector<StageItem>& items)
 
 void ForwardRenderer::opaqueStage(const View& view, std::vector<StageItem>& items)
 {
+    ZoneScopedN("ForwardRenderer::opaqueStage");
+    
     // update uniforms
     _device->setUniformMat4(cc_matView, view.matView);
     _device->setUniformMat4(cc_matViewInv,view.matViewInv);
@@ -322,6 +339,7 @@ void ForwardRenderer::opaqueStage(const View& view, std::vector<StageItem>& item
 
 void ForwardRenderer::shadowStage(const View& view, std::vector<StageItem>& items)
 {
+    ZoneScopedN("ForwardRenderer::shadowStage");
     // update rendering
     submitShadowStageUniforms(view);
     
@@ -336,6 +354,7 @@ void ForwardRenderer::shadowStage(const View& view, std::vector<StageItem>& item
 
 void ForwardRenderer::transparentStage(const View& view, const std::vector<StageItem>& items)
 {
+    ZoneScopedN("ForwardRenderer::transparentStage");
     // update uniforms
     _device->setUniformMat4(cc_matView, view.matView);
     _device->setUniformMat4(cc_matViewInv,view.matViewInv);

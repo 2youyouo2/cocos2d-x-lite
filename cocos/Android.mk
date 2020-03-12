@@ -166,7 +166,8 @@ renderer/renderer/EffectBase.cpp \
 scripting/js-bindings/auto/jsb_gfx_auto.cpp \
 scripting/js-bindings/auto/jsb_renderer_auto.cpp \
 scripting/js-bindings/manual/jsb_renderer_manual.cpp \
-scripting/js-bindings/manual/jsb_gfx_manual.cpp
+scripting/js-bindings/manual/jsb_gfx_manual.cpp \
+tracy/TracyClient.cpp
 endif # USE_GFX_RENDERER
 
 ifeq ($(USE_VIDEO),1)
